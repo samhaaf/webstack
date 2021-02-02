@@ -1,0 +1,16 @@
+
+
+: how to do AWS web deployment of Google managed domain
+  * Route53
+    * create Hosted Zone
+      . root domain
+    * :recommended: enable DNSSEC
+      . KMS key name
+        :ns: <root_domain>DNSSEC
+      . CMS key key name
+        :ns: <root_domain>-DNSSEC
+    * :optional: add subdomain(s)
+      . 
+  * Google Domains
+    * disable DNSSEC
+    * apply custom name servers to DNS config

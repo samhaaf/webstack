@@ -1,0 +1,14 @@
+{
+  "version": "1.0", // Chalice version, not project version
+  "app_name": "${project.project_name}",
+  "automatic_layer": true,
+  "api_gateway_stage": "api",
+  "stages": {
+    "dev": {
+
+    },
+    "stage": {
+
+    }
+  }
+}

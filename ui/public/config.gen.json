@@ -1,0 +1,4 @@
+{
+  "stage": "#{stage}",
+  "api_url": "${stages.#{stage}.api_url}"
+}

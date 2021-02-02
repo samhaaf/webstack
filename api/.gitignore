@@ -1,0 +1,7 @@
+.chalice/deployments/
+.chalice/venv/
+.chalice/config.json
+poetry.lock
+requirements.txt
+storage.json
+vendor/

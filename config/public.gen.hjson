@@ -1,0 +1,21 @@
+{
+  "project": {
+    "project_name": "webstack",
+    "version": "0.1.0",
+    "team_name": "haaftools",
+    "domain": "webstack.haaftools.com"
+  }
+  "aws": {
+    "namespace_prefix": "${project.team_name}-${project.project_name}",
+    "s3_bucket": "${project.domain}"
+  }
+  "stages": {
+    "local": {
+      "api_url": "https://localhost:8000"
+    },
+    "dev": {
+      "chalice": "%{./api/.chalice/deployed/dev.json}",
+      "api_url": "${stages.dev.chalice.resources.3.rest_api_url}"
+    }
+  }
+}

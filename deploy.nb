@@ -1,0 +1,80 @@
+
+
+: s3 bucket
+  . bucket :ns: ${project.domain},
+  . file :ns: <stage>/public/*
+
+
+: ACL Certificate
+  . create single certificate for domain and all subdomains
+    . may require modifying existing certificate for new subdomain
+  . one validation header is generated for each subdomain
+  ? add validation headers to the Google Domains DNS record
+    . one is generated for each subdomain
+  ? add validation headers to the route53 managed group
+    ? how does route53 know I own the domain
+
+
+
+: cloudfront Distribution
+  . one for website
+  ? one for www
+    ? s3 bucket & redirect for www subdomain
+      . said to preserve deep resourcing
+  :TODO: signed urls and signed cookies
+  . enable origin shield
+    :set: region = us-east-1
+  . restrict bucket access
+    :set: yes
+  . origin path
+    . /{stage}/{public}
+  . comment
+  :set: origin custom headers
+    :TODO:
+  :set: alternate domain names :to: ${project.domain_name}
+  : Default Cache Behavior Settings
+    :set: viewer protocol policy :to: redirect http to https
+    . Use a cache policy and origin request policy
+      . as opposed to legacy cache
+    . caching policy
+      . Managed-CachingOptimized
+    . origin request policy
+      . manages headers and cookies sent to the origin
+      . not sure how this applies really
+    . smooth streaming
+      :optional:
+      :default: no
+    . restrict viewer access
+      :TODO:
+    . Compress Objects automatically
+      :set: yes
+  : Distribution Settings
+    . ACL certificate
+      :set: custom cert
+    . default root object
+      :set: index.html
+    . standard logging
+      :set: on
+      . s3 bucket for logs
+        :set: {domain} bucket
+      . s3 log prefix
+        :set: /{stage}/logs
+    :set: enable IPv6 = True
+  : error response
+    . create error response for 404
+    . set error caching minimum TTL to Really high
+      . run test to make sure that doing an invalidation clears this cache
+    :set: customized error response :to: true
+    . :set: response_page_path :to: /index.html
+    . :set: http response code :to: 200
+  :if: you want to kill caching :then:
+    :set: cache and origin response settings :to: legacy cache
+    :set: object caching :to: customize
+    :set: minimum TTL :to: 0
+    :set: maximum TTL :to: 0
+
+
+: Route53 resource group
+  . create record to route to Distribution
+    . A type record
+    .

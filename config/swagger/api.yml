@@ -1,0 +1,50 @@
+yswagger: "2.0"
+info:
+  description: "This is a sample serverless webstack"
+  version: "0.1.0"
+  title: "Serverless Webstack"
+  contact:
+    email: "samhaaf@gmail.com"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /items:
+    post:
+      tags:
+      - "store"
+      summary: "Returns all items"
+      description: "Returns a map of status codes to quantities"
+      operationId: "routes/POST_item"
+      produces:
+        - "application/json"
+      parameters:
+        - in: body
+          name: Item
+          schema:
+            $ref: ../objects/item.yml
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: ../objects/item.yml
+        "409":
+          description: "Could not create the resource"
+    get:
+      summary: "Returns paginated list of items"
+      description: "Returns a map of status codes to quantities"
+      operationId: "routes/POST_item"
+      produces:
+        - "application/json"
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: offset
+          type: integer
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "./objects/item.yml"

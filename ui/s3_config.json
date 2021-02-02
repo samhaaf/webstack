@@ -1,0 +1,13 @@
+{
+  "auto_css": true, // default
+  "files": [{
+      "path": "public/index.html",
+      "serve_html": true
+    },{
+      "path": "public/",
+      "private": false
+    },{
+      "path": "public/config.gen.json",
+      "ignore": true
+    }]
+}

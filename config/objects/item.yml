@@ -1,0 +1,15 @@
+type: "object"
+properties:
+  id:
+    type: "string"
+  name:
+    type: "string"
+  stock_status:
+    type: "string"
+    description: "Stock Status"
+    enum:
+    - "in-stock"
+    - "out-of-stock"
+    - "gone-forever"
+xml:
+  name: "Item"

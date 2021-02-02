@@ -1,0 +1,208 @@
+: queue
+  \ link to google sheet
+  \ simplest chalice api
+  \ simplest svelte ui
+  \ simplest svelte router
+  \ deploy UI to s3
+    \ svelte app
+    \ static files
+    \ assure all non-root resources get rendered correctly
+    \ hosted online
+    \ domain attached
+  \ update config/bin/generate.sh to get build information from sub-directories
+    > special character for lookup
+      :eg: {"api: {"dev": "%{./api/.chalice/deployed/dev.json}"}
+  ~ send stage-specific config file with UI
+    \ API url
+      . build for that stage
+      . raise error on not-deployed
+    * build with input variables
+      :eg: --stage dev
+      * config/bin/apply.py --stage dev
+        . update find_and_replace to replace #stage with stage value
+
+
+  ~ minimal postgres docker
+  * simple SQLAlchemy ORM
+  * use cached API result for e.g. product_gallery, then rebuild with fresh
+    . call /<resource>?cached and /<resource> async
+      > Redis
+    . if cache, build that first
+    . supersede with non-cache if updates made to response
+  * /domains
+    * make publish
+      . check existing configs and modify where necessary
+
+  * link to webstack.3649.design
+  * update ui/readme
+    . make commands
+    . s3_sync.json
+  * update project in pyproject.toml
+  : advanced config
+    * foreach variables in config module
+    * lookup match in array of config objects
+      :eg: "${stages.api.resources.%{name=rest_api}.}"
+    * capture all config/bin/apply.py command line args as lookup variables
+  * automatically invalidate certain files
+    . determine which files need to have their cache status reset
+      . files have an updated "cache_time"
+    . maybe some argument that forces an invalidation on critical updates
+      :ex: {"force_invalidation": true}
+  * open-source or in-house alternative to google analytics
+  * multi-arm bandit optimization
+
+: v0.1.0
+  . local deployment
+  . minimal stack
+    . ui
+    . api
+    . CMS (google sheet)
+
+  : /ui
+    * ./README.md
+      . update to reflect minimal information for local development
+
+  . /api/makefile
+
+  :complete: when it can be copied to create a static website for WT and SCF
+
+
+: v0.2.0
+  . database
+  . full serverless deployment
+  . multiple environments
+
+  : database
+
+
+  : /api
+    . Chalice
+    . basic ORM
+      . SQLAlchemy
+      . sqlite
+
+  . serverless
+    . RDS
+      . Aurora
+    . Chalice
+    > terraform
+
+  : /flask
+    : ./bin
+      * venv stuff
+
+  . make deploy
+
+
+  : /config
+    * databases
+      . remote
+        . IAM
+        . password
+      . local
+
+
+: v0.3.0
+  . user authentication
+
+
+:
+
+
+: v0.4.0
+  . payment processing
+  * stripe
+
+
+: v1.0
+
+  * swagger integration
+
+  : makefile
+    * build
+      * poetry
+      * npm
+
+
+: < v2.0
+
+  : config-driven everything
+
+    . infrastructure level
+      . terraform
+
+    . API level
+      . swagger
+        . definitions
+      . data types
+
+    . database level
+      . ORM
+      . other schema management
+
+    . interface level
+      . data types
+      . widgets
+        . standardized handlers
+          . ['_WARNING_']
+
+    : database
+      . nucleation
+        . take the concept at hand and evolve it in a portal
+        . database is procedurally generated
+
+
+    > use one config to build definitions for swagger & orm & ui
+
+
+: < v3.0
+
+  : plugins
+
+    % plugin theory
+      > XML application structure with extension stagel similar to FHIR
+
+
+: v?.?
+
+  > /swagger.yml
+    > root directory
+      + resources can be referenced from UI package
+
+  : ../utils/pygit
+    . bin of commands that streamline (my) common git practices
+    * add
+    * commit
+      . default: ask for tag
+    * tag
+    * push
+      . automatically push tags
+
+  > find_and_replace global variables
+    . store in /config/public.json['find_and_replace']
+    . should make all JSON files able to reference these global vars
+      . before starting UI
+      . before starting API
+      . before terraform
+    . don't replace them in the files themselves because they might change
+    : /bin
+      * /find_and_replace.sh
+
+
+  > support graphQL
+
+  * switch out of bootstrap
+    . more fine-grained svelte library
+    > tailwind
+    > Semantic
+
+
+
+  . /makefile
+    . build from top down on initial load
+    * init
+      * create non-template versions of all .template files
+      . interactive
+      . needs to be able to be run multiple times
+    * local
+    * local-dev
