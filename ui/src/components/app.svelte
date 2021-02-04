@@ -13,7 +13,7 @@
   console.log(document.__env_promise__);
   console.log(document.__env__);
 
-  $: let env = document.__env__.;
+  $: env = document.__env__;
   if (env) {
     console.log(env);
     console.log(env.api_url);

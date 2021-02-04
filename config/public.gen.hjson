@@ -14,7 +14,7 @@
       "api_url": "https://localhost:8000"
     },
     "dev": {
-      "chalice": "%{./api/.chalice/deployed/dev.json}",
+      "chalice": "%{../api/.chalice/deployed/dev.json}",
       "api_url": "${stages.dev.chalice.resources.3.rest_api_url}"
     }
   }

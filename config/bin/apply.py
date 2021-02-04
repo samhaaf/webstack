@@ -33,7 +33,7 @@ for file_path in list_dir_recur(args.input):
     if len(file_split) < 3 or file_split[-2] != 'gen':
         continue
 
-    print(f'..{file_path}')
+    print(f'Applying config module to path={file_path}')
 
     with open(file_path) as f:
         target = hjson.load(f) if file_path[-5:] == '.json' else f.readlines()

@@ -1,4 +1,4 @@
-/node_modules/
+node_modules/
 /public/build/
 /public/config
 
@@ -14,5 +14,5 @@ yarn-error.log*
 package.json
 package-lock.json
 rollup.config.js
-
+.lock.json
 public/config.json

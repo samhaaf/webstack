@@ -4,11 +4,7 @@
   "automatic_layer": true,
   "api_gateway_stage": "api",
   "stages": {
-    "dev": {
-
-    },
-    "stage": {
-
-    }
+    "dev": { },
+    "stage": { }
   }
 }

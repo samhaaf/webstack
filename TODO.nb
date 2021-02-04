@@ -50,6 +50,10 @@
       :ex: {"force_invalidation": true}
   * open-source or in-house alternative to google analytics
   * multi-arm bandit optimization
+  * update ui/.lock.json
+    . should keep track of deployed assets across devs
+    > ordered dict for better cmp
+    > stage specific files like .chalice/deployed/{stage}.json
 
 : v0.1.0
   . local deployment
