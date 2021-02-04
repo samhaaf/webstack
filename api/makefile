@@ -1,24 +1,46 @@
-build:
+
+set-stage:
+ifeq ($(stage), )
+	@echo WARNING: stage variable unspecified. Using 'stage=local'
+stage := local
+endif
+
+
+install: set-stage
+	@cd .. && make install only_sys_installs=true
+ifeq ($(stage), local)
 	poetry install --no-dev --remove-untracked
-	poetry export -f requirements.txt -o requirements.txt --without-hashes
-	cd .. && make config-api stage=$(stage)
-
-build-local:
+else ifeq ($(stage), dev)
+	poetry install --no-dev --remove-untracked
+else
 	poetry install
-	poetry export -f requirements.txt -o requirements.txt --without-hashes
-	cd .. && make config-api stage=local
+endif
 
-# activate:
-# 	@poetry shell
+
+build: set-stage install
+	poetry export -f requirements.txt -o requirements.txt --without-hashes
+	cd ../config && make apply stage=$(stage) path=../api
+
 
 deploy: build
-	poetry run chalice deploy
+ifeq ($(stage), local)
+	$(error Cannot run 'make deploy' using 'stage=local'. Trys 'make dev' for local development)
+else
+	poetry run chalice deploy --stage $(stage)
+endif
 
-# deploy: build-dev
-# 	poetry run chalice deploy
 
-local: build-local
+dev: build
 	poetry run chalice local
 
-destroy:
-	poetry run chalice delete
+
+check-clean: set-stage
+	echo -n "Are you sure you want to clean 'stage=$(stage)'? [y/N] " && read ans && [ $${ans:-N} = y ]
+
+
+clean: check-clean set-stage
+ifeq ($(stage), local)
+	$(error Cannot interpret 'make clean' using 'stage=local')
+else
+	poetry run chalice delete --stage $(stage)
+endif
