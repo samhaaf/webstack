@@ -1,48 +1,54 @@
 
 
 <script>
-  import { Router, Link, Route } from "svelte-routing";
-	import HomeRoute from "./home/home_route.svelte";
-	import ProductRoute from "./product/product_route.svelte";
+  import Navbar from "./navbar.svelte";
+  import HomeRoute from "./home/home_route.svelte";
+  import FormsRoute from "./forms/forms_route.svelte";
+	import GalleryRoute from "./gallery/gallery_route.svelte";
   import AboutRoute from "./about/about_route.svelte";
+  import { Router, Route } from "svelte-routing";
+  // import cssVars from './utils/svelte-css-vars';
+  import cssVars from 'svelte-css-vars';
 
   export let url = "";
 
-  // await document.__env_promise__;
-  console.log(2);
-  console.log(document.__env_promise__);
-  console.log(document.__env__);
+  let config = document.config.then((data) => { config = data });
+  let css_vars = {};
 
-  $: env = document.__env__;
-  if (env) {
-    console.log(env);
-    console.log(env.api_url);
+  // $: console.log('config:', config)
+  $: if (config.then == null) {
+    for (var key in config.pallete) { css_vars["pallete-" + key] = config.pallete[key] }
   }
-
-
 </script>
 
 
-<main>
-
-	<Router url="{url}">
-		<nav>
-			<Link to="/">Home</Link>
-			<Link to="/products">Products</Link>
-			<Link to="/about">About</Link>
-		</nav>
-		<div>
-			<Route path="/"><HomeRoute/></Route>
-			<Route path="/products" component="{ProductRoute}" />
-			<!-- <Route path="product/:id" component="{BlogPost}" /> -->
-			<!-- <Route path="product/:id"><BlogPost {id}/></Route> -->
-			<!-- <Route path="product/:id" let:params><BlogPost id="{params.id}""/></Route> -->
-			<Route path="about" component="{AboutRoute}" />
-		</div>
-    <div>
-      <p>{env}</p>
+<main use:cssVars={css_vars}>
+  {#await config}
+    loading config..
+  {:then config}
+    <div class="content">
+      <Router url="{url}">
+        <Navbar/>
+        <div class="route-content">
+          <Route path="/"><HomeRoute/></Route>
+          <Route path="/forms"><FormsRoute/></Route>
+          <Route path="/gallery" component="{GalleryRoute}" />
+          <Route path="/about" component="{AboutRoute}" />
+        </div>
+      </Router>
     </div>
-	</Router>
-
-
+  {:catch error}
+    ERROR loading config
+  {/await}
 </main>
+
+
+<style>
+  main {
+
+  }
+  .content {
+    background-color: var(--pallete-0);
+      min-height: 100vh;
+  }
+</style>

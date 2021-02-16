@@ -1,0 +1,13 @@
+
+
+.code-block {
+  background-color: white;
+  border: 2px inset;
+  padding: 6px;
+}
+
+.code-block-disabled {
+  background-color: lightgrey;
+  border: 2px inset;
+  padding: 6px;
+}

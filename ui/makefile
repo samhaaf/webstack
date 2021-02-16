@@ -13,8 +13,11 @@ ifeq ($(shell which npm), )
 endif
 
 
-build: install set-stage
+config: set-stage
 	cd ../config && make apply stage=$(stage) path=../ui
+
+
+build: install config
 	npm install
 ifeq ($(stage), local)
 	npm run build
@@ -26,10 +29,10 @@ endif
 
 
 serve: build
-	npm run serve
+	npm run start
 
 
-dev: install
+dev: build
 	npm run dev
 
 

@@ -5,6 +5,10 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import replace from '@rollup/plugin-replace';
+import sveltePreprocess from 'svelte-preprocess';
+import ts from '@rollup/plugin-typescript';
+// import ts from 'rollup-plugin-typescript';
+import typescript from 'typescript'
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -43,16 +47,20 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		svelte({
+			// enable run-time checks when not in production
+			dev: !production,
+			// preprocess: sveltePreprocess()
+		}),
 		replace({
 			ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
 			MODE: JSON.stringify(mode),
 		}),
-		svelte({
-			compilerOptions: {
-				// enable run-time checks when not in production
-				dev: !production
-			}
-		}),
+		// ts({
+		// 	sourceMap: !production,
+		// 	inlineSources: !production,
+		// 	typescript
+		// }),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance
 		css({ output: 'bundle.css' }),

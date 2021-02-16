@@ -9,6 +9,8 @@
 	<link rel='icon' type='image/ico' href='/favicon.ico'>
 	<link rel='stylesheet' href='/global.css'>
 	<link rel='stylesheet' href='/build/bundle.css'>
+	<!-- <link rel="stylesheet" href="css/normalize.css"> -->
+	<!-- <link rel="stylesheet" href="css/skeleton.css"> -->
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<!-- <script defer src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script> -->
@@ -23,14 +25,13 @@
 				throw new Error(response);
 			}
 		}
-		fetch_config().then((data) => {document.__env_promise__ = data; console.log(data);});
+		document.config = fetch_config();
 	</script>
 	<script defer src='/build/bundle.js'></script>
 
 	<noscript>You need to enable JavaScript to run this app. <img src="cmon_man.gif"></noscript>
 </head>
 
-<body/>
-</body>
+<body style="min-height: 100vh"/>
 
 </html>

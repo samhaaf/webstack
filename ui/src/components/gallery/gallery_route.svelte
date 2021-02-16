@@ -1,10 +1,10 @@
 <script>
 	// import Navbar from './navbar.svelte';
-	import ProductGallery from './product_gallery.svelte';
+	import Gallery from './gallery.svelte';
 // TODO: Get information from the database
 // TODO: Menu
 
 </script>
 
 
-<ProductGallery/>
+<Gallery/>
