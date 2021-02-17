@@ -3,3 +3,4 @@
 **/.IDEA
 **/poetry.lock
 **/requirements.txt
+scratch/

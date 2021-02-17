@@ -88,7 +88,6 @@ def find_and_replace(config, target, lookup={}):
                 match = next(replace_matches)
             except StopIteration:
                 break
-            print(target, not lookup)
             keychain = match.group()[2:-1].split('.')
             span = match.span()
             new_value = multikey_index(lookup, keychain, graceful=not lookup)

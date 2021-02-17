@@ -12,15 +12,87 @@
   \ update config/bin/generate.sh to get build information from sub-directories
     > special character for lookup
       :eg: {"api: {"dev": "%{./api/.chalice/deployed/dev.json}"}
-  ~ send stage-specific config file with UI
+  \ send stage-specific config file with UI
     \ API url
       . build for that stage
       . raise error on not-deployed
-    * build with input variables
+    \ build with input variables
       :eg: --stage dev
-      * config/bin/apply.py --stage dev
+      \ config/bin/apply.py --stage dev
         . update find_and_replace to replace #stage with stage value
 
+  ~ forms design dashboard
+    : examples
+      / basic form
+      * form that renders conditional sections :or: chained sections
+      * multi-page form with back-forward behavior
+    ~ basic form element components
+      ~ map out data-types, input types and components
+    / form from JSON definitions
+      > + define using data types
+        . default input types for each data-type, but they can be changed
+      > - define using input types
+        - too domain-specific
+    ~ graphical tool
+      ~ form explorer
+        * versioning
+          > within the form
+          . major release
+          . minor release
+        \ JSON editor
+      * form validator explorer
+        * human readable string for builtins
+        * code editor for custom validators
+      > side bar
+        > forms listed above & validators listed below
+      > forms page
+        - waste of routes and space
+      _ * render form listed in query param
+
+    * reference other forms
+      :ex: {'type': '#ref', '#ref': {'name': '...', 'version': '...'}}
+    * form validation
+
+    * save form to database
+      > add post URL to config
+        :requires: page_config and form_config & < coordination
+        > environment variable :eg: $(document.config.api_url)/my_form
+      * version control with name and version
+
+    * save output to database
+      * dump raw output as JSON
+      > parse in custom ways using the JSON form definition and ORM
+      > use postgres triggers to extract values into separate table
+
+    * refactor config & values
+      * values object needs to be simplified
+      * config should be bound so that defaults propagate back to editor
+      * create new internal state management object to manage internal logic
+        > struct
+        > state
+        . conditional re-rendering rendering ids
+        . values & validation metadata
+          ? do we want to report back validation errors
+    * reset button needs to trigger value resets
+    * values object edits update form values
+      * resolve circular dependency
+
+    * build whole section using the FormGenerator
+
+  * json bundling
+    . plugin: rollup-plugin-json
+    * move constant json stuff into accompanying files
+
+  * update /config behavior to replace values in other files, not from templates
+
+  * gallery tab -> sheets tab
+    * gallery sub-tab
+    * raw google sheets view
+    * raw database sheet view
+
+  * update environment bundling to use a plugin
+    . plugin: '@rollup/plugin-replace'
+    * move config.gen.json to /ui
 
   ~ minimal postgres docker
   * simple SQLAlchemy ORM
@@ -32,6 +104,11 @@
   * /domains
     * make publish
       . check existing configs and modify where necessary
+
+  * cache-config file
+    . sent from s3 to clients with list of elements that might need reloading
+    . it itself not cached
+    * cross-reference cached file metadata with dates in cache-config
 
   * link to webstack.3649.design
   * update ui/readme
@@ -210,3 +287,5 @@
       . needs to be able to be run multiple times
     * local
     * local-dev
+
+  > create compression format :like: .docx
