@@ -24,6 +24,8 @@
   ~ forms design dashboard
     : examples
       / basic form
+      * alert function
+      * post function
       * form that renders conditional sections :or: chained sections
       * multi-page form with back-forward behavior
     ~ basic form element components
@@ -33,13 +35,16 @@
         . default input types for each data-type, but they can be changed
       > - define using input types
         - too domain-specific
+
     ~ graphical tool
       ~ form explorer
-        * versioning
+        ~ versioning
           > within the form
           . major release
           . minor release
         \ JSON editor
+      * form builder
+      * form styler
       * form validator explorer
         * human readable string for builtins
         * code editor for custom validators

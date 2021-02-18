@@ -25,7 +25,7 @@
       config_is_error = true;
     }
   }
-  // function to trick compiler to ignore circular reference
+  // async function to trick compiler to ignore circular reference
   async function reset_config_string() {
     await sleep(100)
     config_string = JSON.stringify(config, null, 2)
@@ -47,7 +47,7 @@
       values_is_error = true;
     }
   }
-  // function to trick compiler to ignore circular reference
+  // asynce function to trick compiler to ignore circular reference
   async function reset_values_string() {
     await sleep(100)
     values_string = JSON.stringify(values, null, 2)
@@ -77,12 +77,12 @@
 
 <div class='form-view'>
 
-  <h3>Form</h3>
+  <h5>Preview</h5>
   <div class='form-container'>
     <FormGenerator bind:this={cmp} bind:config={config} bind:values={values} id="cmp" />
     <!-- {JSON.stringify(config)} -->
   </div>
-  <br><br>
+  <br>
 
   <!-- <Collapse> -->
     <h5>Value</h5>
@@ -98,7 +98,7 @@
       </code></pre>
     </div>
   <!-- </Collapse> -->
-  <br><br>
+  <br>
 
   <h5>Editor</h5>
   <div class='editor-container' >
@@ -111,7 +111,7 @@
       />
     </code></pre>
   </div>
-  <br><br>
+  <br>
 
   <h5>Raw HTML:</h5>
   <div class='raw-container'>
