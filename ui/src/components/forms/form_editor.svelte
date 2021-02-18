@@ -1,68 +1,16 @@
 
 <script>
   import FormGenerator from './form_generator.svelte';
-  // import { Collapse } from 'svelma';
-  // import AceEditor from '../utils/ace_editor.svelte';
+  import ObjectEditor from '../utils/object_editor.svelte'
 
   export let values;
   export let config;
 
   // to track the html of the form component
-  let cmp;
-  let cmp_html = (document.getElementById('cmp') || {}).outerHTML;
+  // let cmp;
+  // let cmp_html = (document.getElementById('cmp') || {}).outerHTML;
+  let raw_html;
 
-  async function sleep(ms) {await new Promise(resolve => setTimeout(resolve, ms))}
-
-  // make config editable as a string
-  let config_string = JSON.stringify(config, null, 2);
-  let config_is_error = false;
-  $: if (config_string) {
-    try {
-      config = JSON.parse(config_string.replace(/<\/?[^>]+>/gi, ''))
-      config_is_error = false;
-    }
-    catch (error) {
-      config_is_error = true;
-    }
-  }
-  // async function to trick compiler to ignore circular reference
-  async function reset_config_string() {
-    await sleep(100)
-    config_string = JSON.stringify(config, null, 2)
-  }
-  $: if (config) {
-    reset_config_string()
-  }
-
-
-  // make values editable as a string
-  let values_string = JSON.stringify(values, null, 2);
-  let values_is_error = false;
-  $: if (values_string) {
-    try {
-      values = JSON.parse(values_string.replace(/<\/?[^>]+>/gi, ''))
-      values_is_error = false;
-    }
-    catch (error) {
-      values_is_error = true;
-    }
-  }
-  // asynce function to trick compiler to ignore circular reference
-  async function reset_values_string() {
-    await sleep(100)
-    values_string = JSON.stringify(values, null, 2)
-  }
-  $: if (values) {
-    reset_values_string()
-  }
-
-  $: if (config || values) {
-    const update_html = async () => {
-      await sleep(100)
-      cmp_html = (document.getElementById('cmp') || {}).outerHTML;
-    }
-    update_html()
-  }
 
   $: console.log('fe values', values);
 
@@ -79,43 +27,22 @@
 
   <h5>Preview</h5>
   <div class='form-container'>
-    <FormGenerator bind:this={cmp} bind:config={config} bind:values={values} id="cmp" />
+    <FormGenerator bind:raw={raw_html} bind:config={config} bind:values={values}/>
     <!-- {JSON.stringify(config)} -->
   </div>
   <br>
 
-  <!-- <Collapse> -->
-    <h5>Value</h5>
-    <div class='value-container' id='value-container' >
-      <!-- <AceEditor value={JSON.stringify(config)} lang="json"/> -->
-      <pre><code>
-        <div contenteditable
-          class={"code-block" + (values_is_error ? ' json-parse-error' : '')}
-          bind:innerHTML={values_string}
-          > <!-- contenteditable -->
-
-        </div>
-      </code></pre>
-    </div>
-  <!-- </Collapse> -->
+  <h5>Value</h5>
+  <ObjectEditor bind:object={values}/>
   <br>
 
   <h5>Editor</h5>
-  <div class='editor-container' >
-    <!-- <AceEditor value={JSON.stringify(config)} lang="json"/> -->
-    <pre><code>
-      <div
-        contenteditable
-        class={"code-block" + (config_is_error ? ' json-parse-error' : '')}
-        bind:innerHTML={config_string}
-      />
-    </code></pre>
-  </div>
+  <ObjectEditor bind:object={config}/>
   <br>
 
   <h5>Raw HTML:</h5>
   <div class='raw-container'>
-    <div class='code-block-disabled'>{cmp_html}</div>
+    <div class='code-block-disabled'>{raw_html}</div>
   </div>
 
 </div>

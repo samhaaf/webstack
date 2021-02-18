@@ -9,13 +9,13 @@ let replacer = (key, val) => {
 
 
 let reviver = (key, val) => {
-  let regexs = [
+  let fn_regex = [
     new RegExp(`^function\s*([\d\w,\s\*.]*)`),
     new RegExp(`^${key}\s*([\d\w,\s\*.]*\)`),
     /\([\w\d,\s\*.]*\)\s*\=\>/,
     /\w*\s*\=\>/
   ];
-  if ( typeof val === 'string' && regexs.some((r) => (r.test(val.trim()))) ) {
+  if ( typeof val === 'string' && fn_regex.some((r) => (r.test(val.trim()))) ) {
     let functionTemplate = `(${val})`;
     return eval(functionTemplate);
   }

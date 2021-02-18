@@ -1,14 +1,24 @@
 
 <script>
   import FormElement from './form_element.svelte';
+  import {random_string} from '../utils/random.js';
 
   export let state = {};
   export let id = null;
   export let values;
   export let config;
+  export let raw;
 
+  let _this;
   let last_config;
 
+  // if we're exporting raw
+  if (raw !== -1){
+    id = id || random_string(5);
+  }
+  $: if (_this) {
+    raw = (document.getElementById(id) || {}).outerHTML;
+  }
 
   // build component state
   state = Object.assign(
@@ -113,7 +123,7 @@
 
   }
 
-  $: console.log('fg values', JSON.stringify(values));
+  // $: console.log('fg values', JSON.stringify(values));
 
 </script>
 
@@ -154,6 +164,7 @@
   {/if}
 
   <FormElement {config} {id}
+    bind:this={_this}
     bind:value={values.value} bind:state={state} >
     {#if Array.isArray(config.items) }
       {#each config.items as item} <!-- (item._ix) -->
@@ -163,12 +174,14 @@
             bind:values={values.items[item.name]}
             bind:state={item._state}
             id={item.id}
+            raw={-1}
           />
         {:else}
           <svelte:self
             config={item}
             bind:state={item._state}
             id={item.id}
+            raw={-1}
           />
         {/if}
       {/each}
