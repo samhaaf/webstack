@@ -33,4 +33,7 @@ let deserialize = (expression) => {
 }
 
 
-export { serialize, deserialize };
+let deepcopy = (object) => deserialize(serialize(object))
+
+
+export { serialize, deserialize, deepcopy };

@@ -11,3 +11,7 @@
   border: 2px inset;
   padding: 6px;
 }
+
+fieldset {
+  border: 1px solid black;
+}

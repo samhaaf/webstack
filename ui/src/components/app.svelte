@@ -49,6 +49,13 @@
   }
   .content {
     background-color: var(--pallete-0);
-      min-height: 100vh;
+    /* min-height: 100vh; */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* max-height: 100vh; */
+    /* overflow: hidden; */
   }
+  /* .route-content {
+    flex-grow: 1;
+  } */
 </style>

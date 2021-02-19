@@ -1,27 +1,4 @@
 
-<script>
-  import FormGenerator from './form_generator.svelte';
-  import ObjectEditor from '../utils/object_editor.svelte'
-
-  export let values;
-  export let config;
-
-  // to track the html of the form component
-  // let cmp;
-  // let cmp_html = (document.getElementById('cmp') || {}).outerHTML;
-  let raw_html;
-
-
-  $: console.log('fe values', values);
-
-
-</script>
-
-<!--
-  <p>Form: {config.name}</p>
-  <p>Version: {config.name}</p>
-  <br><br> -->
-
 
 <div class='form-view'>
 
@@ -46,6 +23,8 @@
   </div>
 
 </div>
+
+
 
 <style>
   .form-view {
@@ -82,3 +61,23 @@
     background-color: lightyellow;
   }
 </style>
+
+
+
+<script>
+  import FormGenerator from './form_generator.svelte';
+  import ObjectEditor from '../utils/object_editor.svelte'
+
+  export let values;
+  export let config;
+
+  // to track the html of the form component
+  // let cmp;
+  // let cmp_html = (document.getElementById('cmp') || {}).outerHTML;
+  let raw_html;
+
+
+  $: console.log('fe values', values);
+
+
+</script>
