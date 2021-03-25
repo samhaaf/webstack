@@ -30,7 +30,7 @@
 
 <nav>
   <Link to="/" getProps={getProps('/')} >
-    <img src="logo.png" class="logo left" alt="3649.design"/>
+    <img src="/logo.png" class="logo left" alt="3649.design"/>
   </Link>
   <div class='nav-button-container'>
     <Link getProps={getProps('/forms')} to="/forms">

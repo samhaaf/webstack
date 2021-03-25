@@ -3,7 +3,7 @@
 
 <div class="form-dashboard">
 
-  <div class="form-selector">
+  <div class="form-selector tile">
     <h5>Explorer</h5>
     <br>
 
@@ -69,7 +69,7 @@
   </div>
 
   {#if config != null}
-    <div class='form-editor'>
+    <div class='form-editor tile'>
 
       <h5>Configuration</h5>
       <ObjectEditor bind:object={config}/>
@@ -90,7 +90,7 @@
     <!-- <FormEditor bind:config={config} bind:values={values}/> -->
 
     {#if config != {}}
-      <div class='form-preview'>
+      <div class='form-preview tile'>
         <h5>Preview</h5>
         <br>
         <FormGenerator bind:raw={raw_html} bind:config={config} bind:values={values}/>
@@ -106,6 +106,11 @@
 <!---- Style ---->
 
 <style>
+  .tile {
+    border: 3px ridge;
+    background-color: var(--pallete-0);
+    padding: 24px;
+  }
   .form-dashboard {
     width: 100%;
     display: flex;
@@ -227,13 +232,13 @@
                   'name': 'first_name',
                   'label': 'First name:',
                   'placeholder': 'Ex. John',
-                  'validations': [],  // default
+                  'validations': [],
                 },{
                   'type': 'string',
                   'name': 'last_name',
                   'label': 'Last name:',
                   'placeholder': 'Ex. Smith',
-                  'validations': [],  // default
+                  'validations': [],
                 },{
                   'type': 'reset',
                 },{

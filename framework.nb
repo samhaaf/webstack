@@ -1,0 +1,16 @@
+
+  : higher-than-svelte framework
+    . starts at the data structure
+      . JSON blobs
+      . element relationships
+        :ex: user needs interface to edit 'this'
+    . stitches svelte files
+      . svelte files for individual components
+      . reference components using custom index
+        . name, version, variant, etc.
+    . produces databases and migrations
+    . component library
+      . variants based on input arguments / configuration
+        :eg: navbars can be on side or top
+      . versions
+      . standards (like styling hooks)

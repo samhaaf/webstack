@@ -1,3 +1,54 @@
+: Thursday
+  \ forms dashboard refactor
+    \ 3 columns
+    \ object editor
+  \ fix object editor
+  \ fix value box
+  \ clean config and values
+  \ fix column width & height
+  \ pending changes
+    . so version isn't updated
+    \ pending
+    * cached to version
+  \ major & minor version
+  \ fix version change issue
+  * deploy button
+    . alert('Deploying version to client server.')
+  * more elements
+    . examples below
+
+: Friday
+  \ flow chart
+    . envisioned ecosystem
+      . client server
+        . EHR
+        . local webapps
+        . local CQI database
+          . supplemental info
+      . cloud
+        . centralized CQI database
+      . webapp(s)
+        . Form Manager
+    . location of this tool
+      . "Form Manager"
+      . "to manage the forms"
+  \ descriptive forms route
+    . Form Manager
+      " a tool to manage client interfaces"
+      : features
+        . version management
+        . editor
+        . reactive states
+        . form preview
+        . function attachments
+      . TODO
+        . validations
+        . graphical editor
+  * get api working (in case)
+  * make all /forms/* trigger active nav
+        .
+
+
 : queue
   \ link to google sheet
   \ simplest chalice api

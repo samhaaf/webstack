@@ -5,15 +5,16 @@
   import dayjs from 'dayjs';
 
 	async function fetch_items() {
-    await document.config;
-		const response = await fetch(document.config.api_url + '/products');
+    let config = await document.config.then((config) => {return config })
+    const response = await fetch(config.api_url + '/products');
 
-		if (response.ok) {
-			return response.json();
-		} else {
-			throw new Error(response);
-		}
-	}
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error(response);
+    }
+  }
+	// }
 
   let promise = fetch_items();
 </script>
@@ -39,7 +40,7 @@
 
 
 <style>
-  .product {
+  .item {
     width: 300pt;
     min-height: 300pt;
   }
