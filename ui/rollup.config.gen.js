@@ -6,6 +6,7 @@ import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
 import replace from '@rollup/plugin-replace';
 import sveltePreprocess from 'svelte-preprocess';
+import { sass } from 'svelte-preprocess-sass';
 import ts from '@rollup/plugin-typescript';
 // import ts from 'rollup-plugin-typescript';
 import typescript from 'typescript'
@@ -51,6 +52,9 @@ export default {
 			// enable run-time checks when not in production
 			dev: !production,
 			// preprocess: sveltePreprocess()
+			preprocess: {
+				style: sass()
+			}
 		}),
 		replace({
 			ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),

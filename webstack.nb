@@ -1,192 +1,4 @@
-: Thursday
-  \ forms dashboard refactor
-    \ 3 columns
-    \ object editor
-  \ fix object editor
-  \ fix value box
-  \ clean config and values
-  \ fix column width & height
-  \ pending changes
-    . so version isn't updated
-    \ pending
-    * cached to version
-  \ major & minor version
-  \ fix version change issue
-  * deploy button
-    . alert('Deploying version to client server.')
-  * more elements
-    . examples below
 
-: Friday
-  \ flow chart
-    . envisioned ecosystem
-      . client server
-        . EHR
-        . local webapps
-        . local CQI database
-          . supplemental info
-      . cloud
-        . centralized CQI database
-      . webapp(s)
-        . Form Manager
-    . location of this tool
-      . "Form Manager"
-      . "to manage the forms"
-  \ descriptive forms route
-    . Form Manager
-      " a tool to manage client interfaces"
-      : features
-        . version management
-        . editor
-        . reactive states
-        . form preview
-        . function attachments
-      . TODO
-        . validations
-        . graphical editor
-  * get api working (in case)
-  * make all /forms/* trigger active nav
-        .
-
-
-: queue
-  \ link to google sheet
-  \ simplest chalice api
-  \ simplest svelte ui
-  \ simplest svelte router
-  \ deploy UI to s3
-    \ svelte app
-    \ static files
-    \ assure all non-root resources get rendered correctly
-    \ hosted online
-    \ domain attached
-  \ update config/bin/generate.sh to get build information from sub-directories
-    > special character for lookup
-      :eg: {"api: {"dev": "%{./api/.chalice/deployed/dev.json}"}
-  \ send stage-specific config file with UI
-    \ API url
-      . build for that stage
-      . raise error on not-deployed
-    \ build with input variables
-      :eg: --stage dev
-      \ config/bin/apply.py --stage dev
-        . update find_and_replace to replace #stage with stage value
-
-  ~ forms design dashboard
-    : examples
-      / basic form
-      * alert function
-      * post function
-      * form that renders conditional sections :or: chained sections
-      * multi-page form with back-forward behavior
-    ~ basic form element components
-      ~ map out data-types, input types and components
-    / form from JSON definitions
-      > + define using data types
-        . default input types for each data-type, but they can be changed
-      > - define using input types
-        - too domain-specific
-
-    ~ graphical tool
-      ~ form explorer
-        ~ versioning
-          > within the form
-          . major release
-          . minor release
-        \ JSON editor
-      * form builder
-      * form styler
-      * form validator explorer
-        * human readable string for builtins
-        * code editor for custom validators
-      > side bar
-        > forms listed above & validators listed below
-      > forms page
-        - waste of routes and space
-      _ * render form listed in query param
-
-    * reference other forms
-      :ex: {'type': '#ref', '#ref': {'name': '...', 'version': '...'}}
-    * form validation
-
-    * save form to database
-      > add post URL to config
-        :requires: page_config and form_config & < coordination
-        > environment variable :eg: $(document.config.api_url)/my_form
-      * version control with name and version
-
-    * save output to database
-      * dump raw output as JSON
-      > parse in custom ways using the JSON form definition and ORM
-      > use postgres triggers to extract values into separate table
-
-    * refactor config & values
-      * values object needs to be simplified
-      * config should be bound so that defaults propagate back to editor
-      * create new internal state management object to manage internal logic
-        > struct
-        > state
-        . conditional re-rendering rendering ids
-        . values & validation metadata
-          ? do we want to report back validation errors
-    * reset button needs to trigger value resets
-    * values object edits update form values
-      * resolve circular dependency
-
-    * build whole section using the FormGenerator
-
-  * json bundling
-    . plugin: rollup-plugin-json
-    * move constant json stuff into accompanying files
-
-  * update /config behavior to replace values in other files, not from templates
-
-  * gallery tab -> sheets tab
-    * gallery sub-tab
-    * raw google sheets view
-    * raw database sheet view
-
-  * update environment bundling to use a plugin
-    . plugin: '@rollup/plugin-replace'
-    * move config.gen.json to /ui
-
-  ~ minimal postgres docker
-  * simple SQLAlchemy ORM
-  * use cached API result for e.g. product_gallery, then rebuild with fresh
-    . call /<resource>?cached and /<resource> async
-      > Redis
-    . if cache, build that first
-    . supersede with non-cache if updates made to response
-  * /domains
-    * make publish
-      . check existing configs and modify where necessary
-
-  * cache-config file
-    . sent from s3 to clients with list of elements that might need reloading
-    . it itself not cached
-    * cross-reference cached file metadata with dates in cache-config
-
-  * link to webstack.3649.design
-  * update ui/readme
-    . make commands
-    . s3_sync.json
-  * update project in pyproject.toml
-  : advanced config
-    * foreach variables in config module
-    * lookup match in array of config objects
-      :eg: "${stages.api.resources.%{name=rest_api}.}"
-    * capture all config/bin/apply.py command line args as lookup variables
-  * automatically invalidate certain files
-    . determine which files need to have their cache status reset
-      . files have an updated "cache_time"
-    . maybe some argument that forces an invalidation on critical updates
-      :ex: {"force_invalidation": true}
-  * open-source or in-house alternative to google analytics
-  * multi-arm bandit optimization
-  * update ui/.lock.json
-    . should keep track of deployed assets across devs
-    > ordered dict for better cmp
-    > stage specific files like .chalice/deployed/{stage}.json
 
 : v0.1.0
   . local deployment
@@ -201,7 +13,7 @@
 
   . /api/makefile
 
-  :complete: when it can be copied to create a static website for WT and SCF
+  :complete: when it can be copied to create a static website SCF
 
 
 : v0.2.0
@@ -243,25 +55,26 @@
   . user authentication
 
 
-:
-
-
-: v0.4.0
-  . payment processing
-  * stripe
-
-
 : v1.0
-
-  * swagger integration
-
-  : makefile
-    * build
-      * poetry
-      * npm
+  :qualifications:
+    . deploys compute
+    . deploys ui
+    . deploys database
+    . registers to domain
 
 
 : < v2.0
+
+  * command line util
+    $ webstack [init, update, deploy, local]
+
+  . payment processing
+    * stripe
+
+  * swagger integration
+
+  * lambda images instead of lambda
+    + more compatible with fargate
 
   : config-driven everything
 
@@ -293,6 +106,8 @@
 
 
 : < v3.0
+
+  * trigger fargate / kubernetes clusters
 
   : plugins
 
@@ -345,3 +160,33 @@
     * local-dev
 
   > create compression format :like: .docx
+
+
+
+: Update README with completed items
+  |
+    \ link to google sheet
+    \ simplest chalice api
+    \ simplest svelte ui
+    \ simplest svelte router
+    \ deploy UI to s3
+      \ svelte app
+      \ static files
+      \ assure all non-root resources get rendered correctly
+      \ hosted online
+      \ domain attached
+    \ update config/bin/generate.sh to get build information from sub-directories
+      > special character for lookup
+        :eg: {"api: {"dev": "%{./api/.chalice/deployed/dev.json}"}
+    \ send stage-specific config file with UI
+      \ API url
+        . build for that stage
+        . raise error on not-deployed
+      \ build with input variables
+        :eg: --stage dev
+        \ config/bin/apply.py --stage dev
+          . update find_and_replace to replace #stage with stage value
+
+
+
+: queue

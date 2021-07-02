@@ -8,6 +8,8 @@
         <Navbar/>
         <div class="route-content">
           <Route path="/"><HomeRoute/></Route>
+          <Route path="/spaces"><SpacesRoute/></Route>
+          <Route path="/styles"><StylesRoute/></Route>
           <Route path="/forms/manager/"><FormManager/></Route>
           <Route path="/forms"><FormsRoute/></Route>
           <Route path="/gallery" component="{GalleryRoute}" />
@@ -50,6 +52,8 @@
 <script>
   import Navbar from "./navbar.svelte";
   import HomeRoute from "./home/home_route.svelte";
+  import SpacesRoute from "./spaces/spaces_route.svelte";
+  import StylesRoute from "./styles/styles_route.svelte";
   import FormsRoute from "./forms/forms_route.svelte";
   import FormManager from "./forms/form_manager.svelte";
 	import GalleryRoute from "./gallery/gallery_route.svelte";

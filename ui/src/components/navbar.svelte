@@ -1,38 +1,16 @@
 
-<script>
-  import { Router, Link } from "svelte-routing";
-  // import cssVars from './utils/svelte-css-vars';
-  import cssVars from 'svelte-css-vars';
-
-  let config = document.config;
-
-
-  function getProps(to) {
-
-    function inner_fn({ location, href, isPartiallyCurrent, isCurrent }) {
-      let props = {
-        class: "link-a"
-      }
-
-      const isActive = href === to ? isCurrent : isPartiallyCurrent || isCurrent;
-      if (isActive) {
-        props.class += ' active'
-      } else {
-        props.class += ' inactive'
-      }
-      return props;
-    }
-
-    return inner_fn
-  }
-
-</script>
 
 <nav>
   <Link to="/" getProps={getProps('/')} >
     <img src="/logo.png" class="logo left" alt="3649.design"/>
   </Link>
   <div class='nav-button-container'>
+    <Link getProps={getProps('/spaces')} to="/spaces">
+      <div class="nav-button">Spaces</div>
+    </Link>
+    <Link getProps={getProps('/styles')} to="/styles">
+      <div class="nav-button">Styles</div>
+    </Link>
     <Link getProps={getProps('/forms')} to="/forms">
       <div class="nav-button">Forms</div>
     </Link>
@@ -44,6 +22,7 @@
     </Link>
   </div>
 </nav>
+
 
 <style>
   nav {
@@ -97,3 +76,33 @@
     background-color: var(--pallete-0-5);
   }
 </style>
+
+
+<script>
+  import { Router, Link } from "svelte-routing";
+  // import cssVars from './utils/svelte-css-vars';
+  import cssVars from 'svelte-css-vars';
+
+  let config = document.config;
+
+
+  function getProps(to) {
+
+    function inner_fn({ location, href, isPartiallyCurrent, isCurrent }) {
+      let props = {
+        class: "link-a"
+      }
+
+      const isActive = href === to ? isCurrent : isPartiallyCurrent || isCurrent;
+      if (isActive) {
+        props.class += ' active'
+      } else {
+        props.class += ' inactive'
+      }
+      return props;
+    }
+
+    return inner_fn
+  }
+
+</script>
