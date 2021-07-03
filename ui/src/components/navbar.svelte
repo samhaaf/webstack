@@ -2,10 +2,10 @@
 
 <nav>
   <Link to="/" getProps={getProps('/')} >
-    <img src="/logo.png" class="logo left" alt="3649.design"/>
+    <img src="/static/images/logo.png" class="logo left" alt="3649.design"/>
   </Link>
   <div class='nav-button-container'>
-    <Link getProps={getProps('/spaces')} to="/spaces">
+    <!-- <Link getProps={getProps('/spaces')} to="/spaces">
       <div class="nav-button">Spaces</div>
     </Link>
     <Link getProps={getProps('/styles')} to="/styles">
@@ -19,7 +19,7 @@
     </Link>
     <Link getProps={getProps('about')} to="/about">
       <div class="nav-button">About</div>
-    </Link>
+    </Link> -->
   </div>
 </nav>
 

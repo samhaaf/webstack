@@ -7,9 +7,11 @@ app = Chalice(app_name='webstack')
 
 OBJECTS = {}
 
+
 @app.route('/test', methods=['GET'])
 def GET_test():
     return {'key': 'value'}
+
 
 @app.route('/objects/{key}', methods=['GET', 'PUT'])
 def GET_myobject(key):
@@ -46,8 +48,6 @@ def GET_products():
         {key.replace(' ', '_').lower(): value for key,value in record.items()}
         for record in records
     ]
-
-    print(formatted)
 
     return formatted
 

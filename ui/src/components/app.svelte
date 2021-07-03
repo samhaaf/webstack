@@ -3,17 +3,11 @@
   {#await config}
     loading config..
   {:then config}
-    <div class="content pallete-0-5">
+    <div class="content">
       <Router url="{url}">
-        <Navbar/>
+        <!-- <Navbar/> -->
         <div class="route-content">
-          <Route path="/"><HomeRoute/></Route>
-          <Route path="/spaces"><SpacesRoute/></Route>
-          <Route path="/styles"><StylesRoute/></Route>
-          <Route path="/forms/manager/"><FormManager/></Route>
-          <Route path="/forms"><FormsRoute/></Route>
-          <Route path="/gallery" component="{GalleryRoute}" />
-          <Route path="/about" component="{AboutRoute}" />
+          <Route path="/"><TestRoute/></Route>
         </div>
       </Router>
     </div>
@@ -23,7 +17,7 @@
 </main>
 
 
-<style>
+<!-- <style>
   main {
 
   }
@@ -46,18 +40,12 @@
     background-color: var(--pallete-4);
   }
 
-</style>
+</style> -->
 
 
 <script>
   import Navbar from "./navbar.svelte";
-  import HomeRoute from "./home/home_route.svelte";
-  import SpacesRoute from "./spaces/spaces_route.svelte";
-  import StylesRoute from "./styles/styles_route.svelte";
-  import FormsRoute from "./forms/forms_route.svelte";
-  import FormManager from "./forms/form_manager.svelte";
-	import GalleryRoute from "./gallery/gallery_route.svelte";
-  import AboutRoute from "./about/about_route.svelte";
+  import TestRoute from "./test/test_route.svelte";
   import { Router, Route } from "svelte-routing";
   // import cssVars from './utils/svelte-css-vars';
   import cssVars from 'svelte-css-vars';
