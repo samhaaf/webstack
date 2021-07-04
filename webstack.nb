@@ -13,11 +13,11 @@
 
   . /api/makefile
 
-  :complete: when it can be copied to create a static website SCF
+  :complete: when it can be copied to create a static website
 
 
 : v0.2.0
-  . database
+
   . full serverless deployment
   . multiple environments
 
