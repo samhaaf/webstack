@@ -50,12 +50,3 @@ def GET_products():
     ]
 
     return formatted
-
-    # sheets = Sheets.from_files('vendor/client_secrets.json', 'storage.json')
-    # print(sheets)
-    # sheet = sheets['1c919wtwvSx_tbBcIVXO4DLF5nwxsjH7pHTIfQa8u3Ao']
-    # print(sheet)
-    # tab = sheet.find('Inventory')
-    # print(tab)
-    # print(tab['A1'])
-    # return str(tab)

@@ -24,7 +24,7 @@ build: set-stage install
 
 deploy: build
 ifeq ($(stage), local)
-	$(error Cannot run 'make deploy' using 'stage=local'. Trys 'make dev' for local development)
+	$(error Cannot run 'make deploy' using 'stage=local')
 else
 	poetry run chalice deploy --stage $(stage)
 endif
