@@ -1,4 +1,4 @@
-import boto3
+import boto3, botocore
 import subprocess
 import json
 import hjson
@@ -36,14 +36,17 @@ local_dir = os.path.dirname(os.path.realpath(__file__))
 
 ## Parse command line args
 parser = argparse.ArgumentParser()
-parser.add_argument('--stage', '-m', type=str, default="dev")
+parser.add_argument('--stage', '-s', type=str, default=None)
 args = parser.parse_args()
+
+ # assert that a stage has been offerred
+assert args.stage is not None, '--stage argument expected'
 
 
 ## Build and load the config from the config module
-os.chdir(f"{local_dir}/../../")
+os.chdir(f"{local_dir}/../../config/")
 process = subprocess.run(
-    ['make','config-print', f'stage={args.stage}'],
+    ['make','print', f'stage={args.stage}'],
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE
 )
@@ -176,6 +179,7 @@ s3 = boto3.client('s3')
 
 
 ## push each updated file to the bucket in config['aws']['s3_bucket']
+print('Pushing files to AWS Bucket:', config['aws']['s3_bucket'])
 for file_blob in to_upload:
     key = os.path.join(args.stage, file_blob['path'])
     if config['aws'].get('root_path'):
@@ -192,8 +196,10 @@ for file_blob in to_upload:
         logger.error(f'Failed to upload file_blob: {key}')
         print(response)
 
-## send Distribution invalidation for updated files
 
-## persist s3.lock.json
+## TODO: send Distribution invalidation for updated files
+
+
+## persist changes in .lock.json
 with open('.lock.json', 'w') as f:
     json.dump(lock, f, indent=4)

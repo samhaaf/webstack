@@ -2,7 +2,8 @@
 
 : s3 bucket
   . bucket :ns: ${project.domain},
-  . file :ns: <stage>/public/*
+  . file :ns: <stage>/public/<file>
+
 
 
 : ACL Certificate

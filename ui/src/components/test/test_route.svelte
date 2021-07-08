@@ -55,7 +55,7 @@
 
   /* Utility Functions */
 	async function fetch_resource(endpoint) {
-    const response = await fetch(config.api_url + '/' + endpoint)//, {'mode': 'no-cors'})
+    const response = await fetch(config.api.url + '/' + endpoint)//, {'mode': 'no-cors'})
     if (response.ok) {
       return response.json()
     } else {
@@ -87,7 +87,7 @@
 
   // API test connect
   tiles = [...tiles, {
-    title: '3. Connect to config.api_url + "/test"',
+    title: '3. Connect to config.api.url + "/test"',
     status: 'warning',
     contnet: 'Depends on test 2'
   }]
@@ -105,7 +105,7 @@
 
   // API retrieve google sheet content
   tiles = [...tiles, {
-    title: '4. Connect to API config.api_url + "/products"',
+    title: '4. Connect to API config.api.url + "/products"',
     status: 'warning',
     contnet: 'Depends on test 2'
   }]

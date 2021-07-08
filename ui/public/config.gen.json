@@ -1,13 +1,8 @@
 {
-  "project_name": "${project.project_name}"
+  "project": "${project.name}",
+  "version": "${project.version}",
   "stage": "#{stage}",
-  "api_url": "${stages.#{stage}.api_url}",
-  "pallete": {
-    0: "#F7F9FB",
-    "0-5": "#e8f6ff"
-    1: "#8FC1E3",
-    2: "#5085A5",
-    3: "#31708E",
-    4: "#687864"
+  "api": {
+    "url": "${stages.#{stage}.api.url}"
   }
 }

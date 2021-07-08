@@ -1,21 +1,28 @@
 {
   "project": {
-    "project_name": "webstack",
+    "name": "webstack.3649.design",
+    "team": "3649.design",
     "version": "0.1.0",
-    "team_name": "haaftools",
-    "domain": "webstack.haaftools.com"
   }
   "aws": {
-    "namespace_prefix": "${project.team_name}-${project.project_name}",
-    "s3_bucket": "${project.domain}"
+    "namespace_prefix": "${project.team}-${project.name}",
+    "s3_bucket": "${project.name}",
+    "region": "us-east-1"
   }
   "stages": {
     "local": {
-      "api_url": "http://localhost:8000"
+      "api": {
+        "url": "http://localhost:8000"
+      }
     },
     "dev": {
       "chalice": "%{../api/.chalice/deployed/dev.json}",
-      "api_url": "${stages.dev.chalice.resources.3.rest_api_url}"
+      "api": {
+        "url": "${stages.dev.chalice.resources.3.rest_api_url}",
+      },
+      "ui": {
+        "domain": "dev.webstack.3649.design"
+      }
     }
   }
 }

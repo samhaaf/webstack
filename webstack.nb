@@ -55,6 +55,10 @@
   . user authentication
 
 
+: v0.4.0
+  . resource tagging for cost and resource management
+
+
 : v1.0
   :qualifications:
     . deploys compute

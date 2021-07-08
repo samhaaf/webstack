@@ -1,5 +1,13 @@
 
-set-stage:
+assert-stage:
+ifeq ($(stage), )
+	$(error Must specify stage argument)
+else
+	@echo stage=$(stage)
+endif
+
+
+set-default-stage:
 ifeq ($(stage), )
 	@echo WARNING: stage variable unspecified. Using 'stage=local'
 stage := local
@@ -13,11 +21,11 @@ ifeq ($(shell which npm), )
 endif
 
 
-config: set-stage
+apply-config: set-default-stage
 	cd ../config && make apply stage=$(stage) path=../ui
 
 
-build: install config
+build: install apply-config
 	npm install
 ifeq ($(stage), local)
 	npm run build
@@ -36,5 +44,6 @@ dev: build
 	npm run dev
 
 
-deploy: build
-	@poetry run python bin/sync_to_s3.py
+deploy: assert-stage build
+	@poetry run python bin/setup_distribution.py --stage $(stage)
+	@poetry run python bin/sync_to_s3.py --stage $(stage)
