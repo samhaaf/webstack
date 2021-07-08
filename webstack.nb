@@ -20,9 +20,11 @@
 
   . full serverless deployment
   . multiple environments
+  . make deploy
 
+
+: v0.3.0
   : database
-
 
   : /api
     . Chalice
@@ -30,18 +32,11 @@
       . SQLAlchemy
       . sqlite
 
+
+: v0.3.1
   . serverless
     . RDS
       . Aurora
-    . Chalice
-    > terraform
-
-  : /flask
-    : ./bin
-      * venv stuff
-
-  . make deploy
-
 
   : /config
     * databases
@@ -51,11 +46,11 @@
       . local
 
 
-: v0.3.0
+: v0.4.0
   . user authentication
 
 
-: v0.4.0
+: v0.4.1
   . resource tagging for cost and resource management
 
 

@@ -1,4 +1,5 @@
 
+
 assert-stage:
 ifeq ($(stage), )
 	$(error Must specify stage argument)
@@ -16,18 +17,33 @@ endif
 
 install:
 ifeq ($(shell which docker), )
-	@echo installing docker
-	sudo apt install docker -y
+	sudo apt install docker.io -y
+	sudo usermod -aG docker ${USER}
+	sudo docker pull postgres
 endif
 
 
 build: install set-default-stage
-	$(error Not implemented)
+	@poetry run python bin/build_docker.py --stage local
+
+
+start: install set-default-stage
+	@poetry run python bin/start_docker.py --stage local
+
+
+stop: set-default-stage
+	@poetry run python bin/stop_docker.py --stage local
+
+
+clear: set-default-stage stop
+	@echo "Do you want to delete the docker? [y/n]"
+	# TODO: prompt for confirmation
+	@poetry run python bin/clear_docker.py --stage local
 
 
 deploy: assert-stage
 ifeq ($(stage), local)
-	$(error Not implemented)
+	$(error cannot deploy to stage=local)
 else
 	$(error Not implemented)
 endif
