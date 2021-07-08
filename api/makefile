@@ -1,12 +1,20 @@
 
-set-stage:
+assert-stage:
+ifeq ($(stage), )
+	$(error Must specify stage argument)
+else
+	@echo stage=$(stage)
+endif
+
+
+set-default-stage:
 ifeq ($(stage), )
 	@echo WARNING: stage variable unspecified. Using 'stage=local'
 stage := local
 endif
 
 
-install: set-stage
+install: set-default-stage
 	@cd .. && make install only_sys_installs=true
 ifeq ($(stage), local)
 	poetry install --no-dev --remove-untracked
@@ -17,7 +25,7 @@ else
 endif
 
 
-build: set-stage install
+build: set-default-stage install
 	poetry export -f requirements.txt -o requirements.txt --without-hashes
 	cd ../config && make apply stage=$(stage) path=../api
 

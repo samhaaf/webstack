@@ -1,6 +1,5 @@
 """
 Generates an ACM certificate in AWS and validates with a Google Domain.
-
 """
 
 

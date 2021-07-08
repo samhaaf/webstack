@@ -1,5 +1,13 @@
 
-set-stage:
+assert-stage:
+ifeq ($(stage), )
+	$(error Must specify stage argument)
+else
+	@echo stage=$(stage)
+endif
+
+
+set-default-stage:
 ifeq ($(stage), )
 	@echo WARNING: stage variable unspecified. Using 'stage=local'
 stage := local
@@ -13,11 +21,11 @@ ifeq ($(shell which docker), )
 endif
 
 
-build: install set-stage
+build: install set-default-stage
 	$(error Not implemented)
 
 
-deploy: set-stage
+deploy: assert-stage
 ifeq ($(stage), local)
 	$(error Not implemented)
 else
