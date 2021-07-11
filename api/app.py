@@ -1,9 +1,14 @@
+
 from chalice import Chalice, NotFoundError
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
+from chalicelib.orm.user import User
+from chalicelib.blueprints import auth
+
 
 app = Chalice(app_name='webstack')
+app.register_blueprint(auth.blueprint)
 
 OBJECTS = {}
 

@@ -5,3 +5,4 @@
 **/requirements.txt
 scratch/
 _archive/
+db/_alembic.py

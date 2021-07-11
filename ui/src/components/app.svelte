@@ -8,6 +8,8 @@
         <!-- <Navbar/> -->
         <div class="route-content">
           <Route path="/"><TestRoute/></Route>
+          <Route path="/login"><Login/></Route>
+          <Route path="/register"><Register/></Route>
         </div>
       </Router>
     </div>
@@ -46,6 +48,8 @@
 <script>
   import Navbar from "./navbar.svelte";
   import TestRoute from "./test/test_route.svelte";
+  import Login from "./auth/login.svelte";
+  import Register from "./auth/register.svelte";
   import { Router, Route } from "svelte-routing";
   // import cssVars from './utils/svelte-css-vars';
   import cssVars from 'svelte-css-vars';

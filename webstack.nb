@@ -1,6 +1,6 @@
 
 
-: v0.1.0
+/ v0.1.0
   . local deployment
   . minimal stack
     . ui
@@ -16,24 +16,34 @@
   :complete: when it can be copied to create a static website
 
 
-: v0.2.0
+/ v0.2.0
 
   . full serverless deployment
   . multiple environments
   . make deploy
 
 
-: v0.3.0
+/ v0.3.0
   : database
 
+
+: v0.3.1
   : /api
     . Chalice
     . basic ORM
       . SQLAlchemy
-      . sqlite
 
 
-: v0.3.1
+: v0.3.2
+    . basic migrations
+
+
+: v0.3.3
+    . test-data for local dev
+      . /data/{stage}
+
+
+: v0.3.4
   . serverless
     . RDS
       . Aurora
@@ -52,6 +62,9 @@
 
 : v0.4.1
   . resource tagging for cost and resource management
+
+: v0.5
+  . user interface give "maintenance" error during migrations
 
 
 : v1.0

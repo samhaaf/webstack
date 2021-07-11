@@ -9,8 +9,6 @@
   "stages": {
     "local": {
       "database": {
-        "type": "...{postgres,mysql,sqlite}",
-        "name": "...",
         "username": "...",
         "password": "..."
       }

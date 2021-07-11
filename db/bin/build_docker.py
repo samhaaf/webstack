@@ -8,7 +8,6 @@ from pprint import pprint
 ## Parse command line args
 parser = argparse.ArgumentParser()
 parser.add_argument('--stage', '-s', type=str, default=None)
-parser.add_argument('--port', '-p', type=int, default=5432)
 args = parser.parse_args()
 
 
@@ -39,7 +38,7 @@ process = subprocess.run(
         '--env', f"POSTGRES_DB={config['database']['name']}",
         '--env', f"POSTGRES_USER={config['database']['username']}",
         '--env', f"POSTGRES_PASSWORD={config['database']['password']}",
-        '-p', f'127.0.0.1:{args.port}:5432/tcp',
+        '-p', f'{config["database"]["host"]}:{config["database"]["port"]}:5432/tcp',
         'postgres'
     ],
     stdout=subprocess.PIPE,

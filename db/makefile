@@ -36,9 +36,14 @@ stop: set-default-stage
 
 
 clear: set-default-stage stop
-	@echo "Do you want to delete the docker? [y/n]"
-	# TODO: prompt for confirmation
 	@poetry run python bin/clear_docker.py --stage local
+
+
+rebuild:
+	make -i stop >/dev/null
+	make -i clear >/dev/null
+	make build >/dev/null
+	make start >/dev/null
 
 
 deploy: assert-stage
