@@ -6,3 +6,4 @@
 scratch/
 _archive/
 db/_alembic.py
+**/poetry.lock

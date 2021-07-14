@@ -1,0 +1,10 @@
+{
+  "user": [{
+    "first_name": "Test",
+    "last_name": "User",
+    "email_address": "test@example.com",
+    "username": "username",
+    "password_hash": "abc",
+    "password_salt": "123"
+  }]
+}

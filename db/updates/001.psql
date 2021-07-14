@@ -1,0 +1,26 @@
+
+-- Table: public.User
+
+-- DROP TABLE public."user";
+
+CREATE TABLE public."user"
+(
+    sid serial NOT NULL,
+    created_at timestamp not null default now(),
+    updated_at timestamp null default now(),
+    deleted_at timestamp null,
+    first_name varchar null,
+    last_name varchar null,
+    email_address varchar not null,
+    username varchar not null,
+    password_hash varchar not null,
+    password_salt varchar not null,
+    CONSTRAINT "user_sid_pk" PRIMARY KEY (sid),
+    CONSTRAINT "user_email_address_uq" UNIQUE (email_address),
+    CONSTRAINT "user_username_uq" UNIQUE (username)
+);
+
+-- TABLESPACE pg_default;
+
+ALTER TABLE public."user"
+    OWNER to postgres;

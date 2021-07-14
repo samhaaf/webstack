@@ -18,6 +18,7 @@ assert args.stage is not None, '--stage argument expected'
 ## Load config
 local_dir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(f"{local_dir}/../../config/")
+
 process = subprocess.run(
     ['make','print', f'stage={args.stage}'],
     stdout=subprocess.PIPE,
@@ -25,10 +26,10 @@ process = subprocess.run(
 )
 if process.stderr:
     raise RuntimeError(f'In config/bin/generate.py:\n\n{process.stderr.decode()}')
-try:
-    config = json.loads('\n'.join(process.stdout.decode().strip().split('\n')))
-except json.decoder.JSONDecodeError:
+if process.stdout.decode()[:4] == 'make':
     config = json.loads('\n'.join(process.stdout.decode().strip().split('\n')[1:-1]))
+else:
+    config = json.loads('\n'.join(process.stdout.decode().strip().split('\n')))
 
 
 ## Init docker image

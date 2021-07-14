@@ -6,6 +6,8 @@ class User(Base):
     __tablename__ = 'bug'
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now())
+    deleted_at = Column(DateTime)
     first_name = Column(String)
     last_name = Column(String)
     username = Column(String, unique=True)
