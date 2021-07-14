@@ -10,6 +10,7 @@ from argparse import ArgumentParser
 import hjson
 import json
 import os
+from pprint import pprint
 
 parser = ArgumentParser()
 parser.add_argument('--input', '-i', type=str)
@@ -25,7 +26,7 @@ def list_dir_recur(path):
         return [path]
     return sum([list_dir_recur(os.path.join(path, p)) for p in os.listdir(path)], [])
 
-config = generate_config()
+config = generate_config(stage=args.stage)
 
 for file_path in list_dir_recur(args.input):
     *directory, file_name = file_path.split('/')

@@ -12,6 +12,7 @@ hjson = "^3.0.2"
 argparse = "^1.4.0"
 alembic = "^1.6.5"
 psycopg2-binary = "^2.9.1"
+sqlalchemy-aurora-data-api = "^0.2.7"
 
 [tool.poetry.dev-dependencies]
 

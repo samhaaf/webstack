@@ -121,6 +121,13 @@ def find_and_replace(config, target, lookup={}):
             keychain = match.group()[2:-1].split('.')
             span = match.span()
             new_value = multikey_index(config, keychain)
+            ## If the new value is not a string, we might replace the whole thing
+            if not isinstance(new_value, str):
+                ## If the span stretches the whole target, we assume a total replace
+                if span[0] == 0 and span[1] == len(target):
+                    target = new_value
+                    break
+                new_value = str(new_value)
             target = target[:span[0]] + new_value + target[span[1]:]
 
     return target

@@ -13,8 +13,8 @@ CREATE TABLE public."user"
     last_name varchar null,
     email_address varchar not null,
     username varchar not null,
-    password_hash varchar not null,
-    password_salt varchar not null,
+    password_hash bytea not null,
+    password_salt bytea not null,
     CONSTRAINT "user_sid_pk" PRIMARY KEY (sid),
     CONSTRAINT "user_email_address_uq" UNIQUE (email_address),
     CONSTRAINT "user_username_uq" UNIQUE (username)

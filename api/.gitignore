@@ -4,4 +4,6 @@
 poetry.lock
 requirements.txt
 storage.json
-vendor/
+vendor/credentials.json
+vendor/client_secrets.json
+vendor/config.json

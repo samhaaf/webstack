@@ -3,9 +3,9 @@
 <div class='login-form'>
   <div class='card mx-auto'>
     <label for='username'>Username:</label>
-    <input name='username' type='string' value={username}>
+    <input name='username' type='string' bind:value={username}>
     <label for='password'>Password:</label>
-    <input name='password' type='password' value={password}>
+    <input name='password' type='password' bind:value={password}>
     <button on:click={on_submit}>Submit</button>
   </div>
 </div>
@@ -26,7 +26,7 @@
   let config = document.config.then((data) => {
     config = data;
     if (config.stage == 'local') {
-      username = 'username';
+      username = 'test_user';
       password = 'password';
     }
   })
@@ -45,7 +45,13 @@
     })
     .then((response) => {
       if (response.ok) {
-        return response.json();
+        try {
+          return response.json();
+        } catch {
+          response.text().then(text => {
+            return text;
+          })
+        }
       } else {
         response.text().then(text => {
           throw new Error(text);
