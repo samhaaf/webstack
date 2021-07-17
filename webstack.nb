@@ -43,28 +43,33 @@
       . /data/{stage}
 
 
-: v0.3.4
-  . serverless
-    . RDS
-      . Aurora
-
-  : /config
-    * databases
-      . remote
-        . IAM
-        . password
-      . local
-
-
 : v0.4.0
   . user authentication
 
 
 : v0.4.1
-  . resource tagging for cost and resource management
+  . full (clean) user login flow with conditional front-end routes
+
 
 : v0.5
-  . user interface give "maintenance" error during migrations
+
+  . full serverless capacity (database)
+    . RDS
+    . Aurora
+
+  : /config
+    * databases
+    . remote
+      . IAM
+      . password
+    . local
+
+
+: v0.6
+  . resource tagging for cost and resource management
+
+: v0.7
+  . multifaceted integrated deployments from root directory
 
 
 : v1.0
