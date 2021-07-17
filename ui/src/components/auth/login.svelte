@@ -39,13 +39,15 @@
     fetch(config.api.url + '/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'text/plain'
       },
-      body: JSON.stringify(post_body)
+      body: JSON.stringify(post_body),
+      credentials: 'include'
     })
     .then((response) => {
       if (response.ok) {
         try {
+          response.headers.forEach((header) => {console.log('header', header)} )
           return response.json();
         } catch {
           response.text().then(text => {

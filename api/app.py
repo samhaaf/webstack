@@ -3,7 +3,7 @@ from chalice import Chalice, NotFoundError
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
-from chalicelib.orm.user import User
+from chalicelib.orm.users import User
 from chalicelib.blueprints import auth
 
 

@@ -2,7 +2,7 @@
   "project": {
     "name": "webstack.3649.design",
     "team": "3649.design",
-    "version": "0.1.0",
+    "version": "0.3.3",
   }
   "aws": {
     "namespace_prefix": "${project.team}-${project.name}",

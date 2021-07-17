@@ -6,7 +6,7 @@ class User(Base):
     __tablename__ = 'user'
     sid = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime)
     deleted_at = Column(DateTime)
     first_name = Column(String)
     last_name = Column(String)

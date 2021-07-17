@@ -10,6 +10,7 @@
           <Route path="/"><TestRoute/></Route>
           <Route path="/login"><Login/></Route>
           <Route path="/register"><Register/></Route>
+          <Route path="/tokens"><Tokens/></Route>
         </div>
       </Router>
     </div>
@@ -50,6 +51,7 @@
   import TestRoute from "./test/test_route.svelte";
   import Login from "./auth/login.svelte";
   import Register from "./auth/register.svelte";
+  import Tokens from "./auth/tokens.svelte";
   import { Router, Route } from "svelte-routing";
   // import cssVars from './utils/svelte-css-vars';
   import cssVars from 'svelte-css-vars';

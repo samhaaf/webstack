@@ -11,6 +11,9 @@
       "database": {
         "username": "...",
         "password": "..."
+      },
+      "api": {
+        "jwt_secret": "..."
       }
     }
   }
