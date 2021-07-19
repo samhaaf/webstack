@@ -1,5 +1,5 @@
 from .base import Base
-from sqlalchemy import Column, DateTime, String, Integer, func, LargeBinary
+from sqlalchemy import Column, DateTime, String, Integer, func, LargeBinary, Boolean
 
 
 class User(Base):
@@ -14,6 +14,7 @@ class User(Base):
     email_address = Column(String, unique=True)
     password_hash = Column(LargeBinary)
     password_salt = Column(LargeBinary)
+    # banned = Column(Boolean)
 
     def __repr__(self):
         return f'{self.last_name}, {self.first_name} - {self.email_address} - @{self.username}'

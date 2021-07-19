@@ -19,7 +19,7 @@ def decode_jwt(token):
     return jwt.decode(token, config['jwt_secret'], algorithms=["HS256"])
 
 
-def create_refresh_token(user_sid, time_to_live=7*24*60*60, session=None):  # default 1-week
+def create_refresh_token(user_sid, ttl=7*24*60*60, session=None):  # default 1-week
 
     expunge_all = False
     if session is None:
@@ -29,7 +29,7 @@ def create_refresh_token(user_sid, time_to_live=7*24*60*60, session=None):  # de
     token = RefreshToken(
         created_at = datetime.now(),
         user_sid = user_sid,
-        time_to_live = time_to_live
+        time_to_live = ttl
     )
 
     session.add(token)

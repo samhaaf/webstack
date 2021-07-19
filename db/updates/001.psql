@@ -11,6 +11,7 @@ CREATE TABLE public."user" (
   username varchar not null,
   password_hash bytea not null,
   password_salt bytea not null,
+  banned boolean null,
   CONSTRAINT "user_sid_pk" PRIMARY KEY (sid),
   CONSTRAINT "user_email_address_uq" UNIQUE (email_address),
   CONSTRAINT "user_username_uq" UNIQUE (username)
