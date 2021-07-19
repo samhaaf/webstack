@@ -49,6 +49,8 @@
 
 : v0.4.1
   . full (clean) user login flow with conditional front-end routes
+  . process to routinely update access tokens
+  . SessionStorage event for multi-tab logout
 
 
 : v0.5

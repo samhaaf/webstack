@@ -3,10 +3,10 @@
 <div class='login-form'>
   <div class='card mx-auto'>
     <label for='username'>Username:</label>
-    <input name='username' type='string' bind:value={username}>
+    <input name='username' type='string' bind:value={credentials.username}>
     <label for='password'>Password:</label>
-    <input name='password' type='password' bind:value={password}>
-    <button on:click={on_submit}>Submit</button>
+    <input name='password' type='password' bind:value={credentials.password}>
+    <button on:click={login_and_redirect}>Submit</button>
   </div>
 </div>
 
@@ -19,48 +19,33 @@
 
 
 <script>
+  import { do_login } from '../../utils/auth.js'
+  import { get_query_params } from '../../utils/general.js'
 
-  let username = '';
-  let password = '';
+  let credentials = {
+    username: '',
+    password: ''
+  }
 
   let config = document.config.then((data) => {
     config = data;
     if (config.stage == 'local') {
-      username = 'test_user';
-      password = 'password';
+      credentials = {
+        username: 'test_user',
+        password: 'password',
+      }
     }
   })
 
-  function on_submit(){
-    let post_body = {
-      username: username,
-      password: password
-    }
-    fetch(config.api.url + '/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain'
-      },
-      body: JSON.stringify(post_body),
-      credentials: 'include'
-    })
-    .then((response) => {
-      if (response.ok) {
-        try {
-          response.headers.forEach((header) => {console.log('header', header)} )
-          return response.json();
-        } catch {
-          response.text().then(text => {
-            return text;
-          })
-        }
-      } else {
-        response.text().then(text => {
-          throw new Error(text);
-        })
+  function login_and_redirect() {
+    do_login(credentials).then((success) => {
+      console.log('success?', success);
+      const url_params = get_query_params(window.location.search);
+      if (success) {
+        console.log('redirecting...');
+        window.location.replace(url_params['return_url'] || '/')
       }
     })
-    .then((response) => { console.log(response) })
-    .catch((error) => { alert(error) })
   }
+
 </script>

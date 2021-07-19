@@ -1,68 +1,62 @@
 
-<main use:cssVars={css_vars}>
-  {#await config}
-    loading config..
+<!-- <main use:cssVars={css_vars}> -->
+<main>
+  {#await document.config}
+    <!-- loading config.. -->
   {:then config}
-    <div class="content">
-      <Router url="{url}">
-        <!-- <Navbar/> -->
-        <div class="route-content">
-          <Route path="/"><TestRoute/></Route>
-          <Route path="/login"><Login/></Route>
-          <Route path="/register"><Register/></Route>
-          <Route path="/tokens"><Tokens/></Route>
+    {#await check_login()}
+      <!-- checking login.. -->
+    {:then logged_in}
+      <div class="content">
+        <Router bind:url={url}>
+          <!-- <Navbar/> -->
+          <div class="route-content">
+
+            <!-- Routes that require being logged in -->
+            <AuthRoute {logged_in} path='/dev/tests'><DevTests/></AuthRoute>
+            <AuthRoute {logged_in} path='/dev/tokens'><DevTokens/></AuthRoute>
+            <AuthRoute {logged_in} path='/logout' return-to='/'><AuthLogout/></AuthRoute>
+
+            <!-- Routes that require NOT being logged in -->
+            <AuthRoute reversed {logged_in} path="/login" redirect='/'><AuthLogin/></AuthRoute>
+            <AuthRoute reversed {logged_in} path="/register" redirect='/'><AuthRegister/></AuthRoute>
+
+          </div>
+        </Router>
+        <div class='dev-stats'>
+          logged in: {logged_in}
         </div>
-      </Router>
-    </div>
+      </div>
+    {/await}
   {:catch error}
     ERROR loading config
   {/await}
 </main>
 
 
-<!-- <style>
-  main {
-
+<style>
+  .dev-stats {
+    position: absolute;
+    bottom: 0;
   }
-  .pallete-0 {
-    background-color: var(--pallete-0);
-  }
-  .pallete-0-5 {
-    background-color: var(--pallete-0-5);
-  }
-  .pallete-1 {
-    background-color: var(--pallete-1);
-  }
-  .pallete-2 {
-    background-color: var(--pallete-2);
-  }
-  .pallete-3 {
-    background-color: var(--pallete-3);
-  }
-  .pallete-4 {
-    background-color: var(--pallete-4);
-  }
-
-</style> -->
+</style>
 
 
 <script>
+  import { Router } from "svelte-routing";
   import Navbar from "./navbar.svelte";
-  import TestRoute from "./test/test_route.svelte";
-  import Login from "./auth/login.svelte";
-  import Register from "./auth/register.svelte";
-  import Tokens from "./auth/tokens.svelte";
-  import { Router, Route } from "svelte-routing";
-  // import cssVars from './utils/svelte-css-vars';
-  import cssVars from 'svelte-css-vars';
+  import AuthLogin from "./auth/login.svelte";
+  import AuthLogout from "./auth/logout.svelte";
+  import AuthRegister from "./auth/register.svelte";
+  import AuthRoute from './auth/route.svelte';
+  import DevTests from "./dev/tests.svelte";
+  import DevTokens from "./dev/tokens.svelte";
+  // import cssVars from 'svelte-css-vars';
+  import {check_login, manage_login_session} from '../utils/auth.js'
 
-  export let url = "";
+  export let url;
 
-  let config = document.config.then((data) => { config = data });
-  let css_vars = {};
+  // let css_vars = {};
 
-  // $: console.log('config:', config)
-  $: if (config.then == null) {
-    for (var key in config.pallete) { css_vars["pallete-" + key] = config.pallete[key] }
-  }
+
 </script>

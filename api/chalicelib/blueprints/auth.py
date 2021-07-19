@@ -153,7 +153,8 @@ def POST_login():
             status_code = 200,
             body = {
                 "status": "success",
-                "time_left": new_refresh_token.time_left
+                "time_left": new_refresh_token.time_left,
+                "refresh_token_sid": new_refresh_token.sid
             },
             headers = headers
         )
@@ -280,15 +281,14 @@ def new_refresh_token():
     ## Open database session
     with Session() as session:
 
-        # ## Check the refresh token
-        # error, refresh_token = check_refresh_token(session=session)
-        # if error:
-        #     return error
+        ## Check the refresh token
+        error, refresh_token = check_refresh_token(session=session)
+        if error:
+            return error
 
 
         ## create new refresh token for this user
-        # new_refresh_token = create_refresh_token(refresh_token['user_sid'], session=session)
-        new_refresh_token = create_refresh_token(2, session=session)
+        new_refresh_token = create_refresh_token(refresh_token['user_sid'], session=session)
 
 
         ## return
@@ -296,7 +296,8 @@ def new_refresh_token():
             status_code = 200,
             body = {
                 "status": "success",
-                "time_left": new_refresh_token.time_left
+                "time_left": new_refresh_token.time_left,
+                "refresh_token_sid": new_refresh_token.sid
             },
             headers = {
                 "Content-Type": "application/json",
@@ -314,6 +315,30 @@ def new_refresh_token():
                 'Access-Control-Allow-Credentials': 'true',
             }
         )
+
+
+
+@blueprint.route('/check_refresh_token', methods=['GET'], cors=True)
+def _check_refresh_token():
+
+    ## Check the refresh token
+    error, refresh_token = check_refresh_token()
+    if error:
+        return error
+
+    ## return
+    return Response(
+        status_code = 200,
+        body = {
+            "status": "success",
+            "refresh_token_sid": refresh_token['sid']
+        },
+        headers = {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
+            'Access-Control-Allow-Credentials': 'true',
+        }
+    )
 
 
 
@@ -344,7 +369,8 @@ def invalidate_refresh_token():
         return Response(
             status_code = 200,
             body = {
-                "status": "success"
+                "status": "success",
+                "refresh_token_sid": refresh_token['sid']
             },
             headers = {
                 "Content-Type": "application/json",
@@ -352,29 +378,6 @@ def invalidate_refresh_token():
                 'Access-Control-Allow-Credentials': 'true',
             }
         )
-
-
-
-@blueprint.route('/check_refresh_token', methods=['GET'], cors=True)
-def _check_refresh_token():
-
-    ## Check the refresh token
-    error, refresh_token = check_refresh_token()
-    if error:
-        return error
-
-    ## return
-    return Response(
-        status_code = 200,
-        body = {
-            "status": "success"
-        },
-        headers = {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-            'Access-Control-Allow-Credentials': 'true',
-        }
-    )
 
 
 
@@ -390,7 +393,7 @@ def new_access_token():
     ## create new refresh token for this user
     access_token = {
         'class': 'base',
-        'ttl': 6,
+        'ttl': 600,
         'refresh_token_sid': refresh_token['sid'],
         'user_sid': refresh_token['user_sid'],
         'created_at': time.time()
@@ -402,7 +405,9 @@ def new_access_token():
         status_code = 200,
         body = {
             "status": "success",
-            "ttl": access_token['ttl']
+            "ttl": access_token['ttl'],
+            "refresh_token_sid": refresh_token['sid'],
+            "access_token_sid": access_token['sid']
         },
         headers = {
             "Content-Type": "application/json",
@@ -511,7 +516,8 @@ def _check_access_token():
     return Response(
         status_code = 200,
         body = {
-            "status": "success"
+            "status": "success",
+            "access_token_sid": access_token['sid']
         },
         headers = {
             "Content-Type": "application/json",
