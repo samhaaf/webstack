@@ -129,8 +129,11 @@ def POST_login():
 
 
         ## create new refresh token for this user
-        new_refresh_token = create_refresh_token(user.sid, session=session)
-        print('refresh token sid', new_refresh_token.sid)
+        new_refresh_token = create_refresh_token(
+            user.sid,
+            ttl = 30,
+            session=session
+        )
 
         headers = {
             "Content-Type": "application/json",

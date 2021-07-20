@@ -57,6 +57,7 @@
   import DevTokens from "./dev/tokens.svelte";
   // import cssVars from 'svelte-css-vars';
   import * as auth from '../utils/auth.js'
+  import * as general from '../utils/general.js'
 
   export let url;
 
@@ -64,16 +65,22 @@
 
   let login_check = auth.check_login()
 
+  function login_callback() {
+    console.log('login_callback');
+    const url_params = general.get_query_params(window.location.search);
+    window.location.replace(url_params['return_url'] || '/')
+  }
+
   function logout_callback() {
+    console.log('logout_callback');
     window.location.href = '/login/?return_url=' + encodeURIComponent( window.location.pathname)
   }
 
-  login_check.then(logged_in => {
-    if (logged_in) {
-      auth.watch_refresh_token(logout_callback);
-      auth.watch_access_token(logout_callback);
-    }
-  })
+  // login_check.then(logged_in => {
+  //   if (logged_in) {
+      auth.watch_refresh_token(login_callback, logout_callback);
+  //   }
+  // })
 
 
 </script>
