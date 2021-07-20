@@ -168,7 +168,7 @@ async function watch_refresh_token(login_callback, logout_callback) {
         validation_time = event.newValue;
         valid_refresh_token = true
         login_callback()
-        wait_and_refresh()
+        _manage_refresh()
       }
     }
   })
@@ -180,19 +180,21 @@ async function watch_refresh_token(login_callback, logout_callback) {
   })
 
 
-  async function wait_and_refresh() {
+  async function _manage_refresh() {
     // if there is an valid refresh token, monitor the access token
-    if (valid_refresh_token) {
+    // if (valid_refresh_token) {
       watch_access_token()
-    }
+    // }
 
     // while the session is active, refresh token
-    while (valid_refresh_token) {
+    // while (valid_refresh_token) {
+    while (true) {
       ttl = localStorage.getItem('refresh_token_ttl');
       validation_time = localStorage.getItem('refresh_token_validation_time');
 
       // wait 1 hour or until there are only 15 seconds left, whichever comes first
-      let wait_time =  Math.max(0, Math.min(3600*1000, ttl*1000 - (Date.now() - validation_time) - 15000))
+      let time_alive = (Date.now() - validation_time)
+      let wait_time =  Math.max(0, Math.min(3600*1000 - time_alive, ttl*1000 - time_alive - 15000))
       console.log('refresh token watch - waiting for:', wait_time);
       await new Promise(r => setTimeout(r, wait_time))
 
@@ -212,25 +214,36 @@ async function watch_refresh_token(login_callback, logout_callback) {
         } else {
           valid_refresh_token = false
           logout_callback()
+          break
         }
       }
     }
   }
 
   // go ahead and start watching the refresh tokens
-  wait_and_refresh()
+  if (valid_refresh_token) {
+    _manage_refresh()
+  }
 }
 
 
 async function watch_access_token() {
-  let valid_refresh_token = true;
+  while (true) {
 
-  // TODO: localStorage event for invalid refresh token
+    // determine if refresh token is still valid, else break
+    let refresh_token_ttl = localStorage.getItem('refresh_token_ttl');
+    let refresh_token_validation_time = localStorage.getItem('refresh_token_validation_time');
+    let refresh_token_invalidation_time = localStorage.getItem('refresh_token_invalidation_time');
+    if (refresh_token_invalidation_time > refresh_token_validation_time) {
+      break
+    }
+    if ((Date.now() - refresh_token_validation_time) > refresh_token_ttl * 1000) {
+      break
+    }
 
-  while (valid_refresh_token) {
     let validation_time = localStorage.getItem('access_token_validation_time');
-    let ttl =  localStorage.getItem('access_token_ttl');
-    let wait_time =  Math.max(0, Math.min(3600*1000, ttl*1000 - (Date.now() - validation_time) - 15000))
+    let ttl = localStorage.getItem('access_token_ttl');
+    let wait_time = ttl*1000 - (Date.now() - validation_time) - 15000
 
     // wait 1 hour or until there are only 15 seconds left, whichever comes first
     console.log('access token watch - waiting for:', wait_time);

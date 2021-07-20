@@ -131,7 +131,7 @@ def POST_login():
         ## create new refresh token for this user
         new_refresh_token = create_refresh_token(
             user.sid,
-            ttl = 30,
+            # ttl = 30,
             session=session
         )
 
@@ -293,7 +293,7 @@ def new_refresh_token():
         ## create new refresh token for this user
         new_refresh_token = create_refresh_token(
             refresh_token['user_sid'],
-            ttl = 30,
+            # ttl = 30,
             session = session
         )
 
@@ -418,7 +418,7 @@ def new_access_token():
     ## create new refresh token for this user
     access_token = {
         'class': 'base',
-        'ttl': 20,
+        'ttl': 600,
         'refresh_token_sid': refresh_token['sid'],
         'user_sid': refresh_token['user_sid'],
         'created_at': time.time()
