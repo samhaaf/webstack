@@ -5,10 +5,7 @@ from datetime import datetime
 from .orm import Session
 from .orm.users import User
 from .orm.tokens import RefreshToken
-
-
-with open('./vendor/config.json') as f:
-    config = json.load(f)
+from .config import config
 
 
 def encode_jwt(payload):

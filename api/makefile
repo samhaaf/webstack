@@ -34,11 +34,12 @@ deploy: build
 ifeq ($(stage), local)
 	$(error Cannot run 'make deploy' using 'stage=local')
 else
-	poetry run chalice deploy --stage $(stage)
+	poetry run python3 bin/setup_iam.py --stage $(stage)
+	poetry run chalice deploy --stage $(stage) --connection-timeout 300
 endif
 
 
-dev: build
+local: build
 	poetry run chalice local
 
 

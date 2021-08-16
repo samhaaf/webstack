@@ -24,7 +24,11 @@ endif
 
 
 build: install set-default-stage
+ifeq ($(stage), local)
 	poetry run python bin/build_docker.py --stage local
+else
+	poetry run python bin/build_rds.py --stage $(stage)
+endif
 
 
 start: install set-default-stage
@@ -50,11 +54,3 @@ rebuild: set-default-stage
 	make start >/dev/null
 	@sleep 2
 	poetry run python bin/update.py --stage $(stage)
-
-
-deploy: assert-stage
-ifeq ($(stage), local)
-	$(error cannot deploy to stage=local)
-else
-	$(error Not implemented)
-endif

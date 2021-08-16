@@ -5,6 +5,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import json
 from chalicelib.orm.users import User
 from chalicelib.blueprints import auth
+from chalicelib.config import cors
 
 
 app = Chalice(app_name='webstack')
@@ -13,12 +14,12 @@ app.register_blueprint(auth.blueprint)
 OBJECTS = {}
 
 
-@app.route('/test', methods=['GET'], cors=True)
+@app.route('/test', methods=['GET'], cors=cors)
 def GET_test():
     return {'key': 'value'}
 
 
-@app.route('/objects/{key}', methods=['GET', 'PUT'], cors=True)
+@app.route('/objects/{key}', methods=['GET', 'PUT'], cors=cors)
 def GET_myobject(key):
     request = app.current_request
     if request.method == 'PUT':
@@ -30,14 +31,14 @@ def GET_myobject(key):
             raise NotFoundError(key)
 
 
-@app.route('/products', methods=['GET'], cors=True)
+@app.route('/products', methods=['GET'], cors=cors)
 def GET_products():
     scope = ['https://spreadsheets.google.com/feeds']
     SPREADSHEET_KEY = '1c919wtwvSx_tbBcIVXO4DLF5nwxsjH7pHTIfQa8u3Ao'
     RANGE = 'Inventory!A1:E'
 
     creds = ServiceAccountCredentials.from_json_keyfile_name(
-        'vendor/credentials.json',
+        'chalicelib/vendor/credentials.json',
         scope
     )
     client = gspread.authorize(creds)

@@ -34,7 +34,7 @@ else:
 ## Init docker image
 process = subprocess.run(
     [   'sudo', 'docker', 'create',
-        '--name', f"{config['project']['name']}-postgres-{args.stage}",
+        '--name', f"{config['project']['domain']}-postgres-{args.stage}",
         '--env', f"POSTGRES_DB={config['database']['name']}",
         '--env', f"POSTGRES_USER={config['database']['username']}",
         '--env', f"POSTGRES_PASSWORD={config['database']['password']}",

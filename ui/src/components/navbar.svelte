@@ -20,6 +20,23 @@
     <Link getProps={getProps('about')} to="/about">
       <div class="nav-button">About</div>
     </Link> -->
+    <div class="nav-button dropdown">
+      Dev
+      <div class="dropdown-content">
+        <Link getProps={getProps('tests')} to="/dev/tests"> <p>Tests</p> </Link>
+        <Link getProps={getProps('tokens')} to="/dev/tokens"> <p>Tokens</p> </Link>
+      </div>
+    </div>
+
+    {#if logged_in}
+      <Link getProps={getProps('logout')} to="/logout">
+        <div class="nav-button">Logout</div>
+      </Link>
+    {:else}
+      <Link getProps={getProps('login')} to="/login">
+        <div class="nav-button">Login</div>
+      </Link>
+    {/if}
   </div>
 </nav>
 
@@ -28,9 +45,10 @@
   nav {
     min-width: 100%;
     /* border: 1px solid; */
-    background-color: var(--pallete-2);
+    background-color: #9da5b4;
     display: flex;
     flex-direction: row;
+    /* height: 80px; */
   }
 
   .nav-button-container {
@@ -58,16 +76,30 @@
     display: flex;
     align-items: center;
     border-width: 2px ;
-    border-color: var(--pallete-3);
+    border-color: #4b5362;
     border-style: inherit;
     padding: 0 12px 0 12px;
     margin: 0 6px 0 0;
     height: 100%;
-    background-color: var(--pallete-3);
+    background-color: #9da5b4;
   }
 
   .nav-button {
-    color: var(--pallete-0);
+    color: #1b1d23;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    padding: 12px 16px;
+    text-align: left;
+    background-color: #f9f9f9;
+    margin-top: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
   }
 
   .logo {
@@ -82,6 +114,8 @@
   import { Router, Link } from "svelte-routing";
   // import cssVars from './utils/svelte-css-vars';
   import cssVars from 'svelte-css-vars';
+
+  export let logged_in;
 
   let config = document.config;
 

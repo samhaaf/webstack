@@ -34,7 +34,7 @@ else:
 ## Init docker image
 process = subprocess.run(
     [   'sudo', 'docker', 'stop',
-        f"{config['project']['name']}-postgres-{args.stage}"
+        f"{config['project']['domain']}-postgres-{args.stage}"
     ],
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE

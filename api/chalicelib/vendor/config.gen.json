@@ -1,4 +1,5 @@
 {
+  "api": "${api}",
   "database": "${database}",
   "jwt_secret": "${api.jwt_secret}"
 }

@@ -3,6 +3,7 @@
   "version": "${project.version}",
   "stage": "#{stage}",
   "api": {
-    "url": "${api.url}"
+    "url": "${api.url}",
+    "cors": "${api.cors}"
   }
 }

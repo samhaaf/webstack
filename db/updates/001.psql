@@ -17,7 +17,7 @@ CREATE TABLE public."user" (
   CONSTRAINT "user_username_uq" UNIQUE (username)
 );
 
-ALTER TABLE public."user" OWNER to postgres;
+-- ALTER TABLE public."user" OWNER to postgres;
 
 
 CREATE TABLE public."refresh_token" (
@@ -32,4 +32,4 @@ CREATE TABLE public."refresh_token" (
   CONSTRAINT "refresh_token_user_sid_fk" FOREIGN KEY (user_sid) REFERENCES "user"(sid)
 );
 
-ALTER TABLE public."refresh_token" OWNER to postgres;
+-- ALTER TABLE public."refresh_token" OWNER to postgres;

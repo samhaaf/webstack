@@ -51,13 +51,12 @@ def multikey_index(value, keychain, _idx=0, graceful=False):
             try:
                 subset = value[int(keychain[_idx])]
             except ValueError:
-                print(f'Expected int key at keychain: {keychain[:_idx+1]}')
-                raise
+                raise ValueError(f'Expected int key at keychain: {keychain[:_idx+1]}')
         else:
             raise ValueError(
                 f'Non-indexible type for given keychain: {keychain[:_idx+1]}'
             )
-    except (IndexError, KeyError) as e:
+    except (IndexError, KeyError, ValueError) as e:
         if graceful:
             return None
         print(f'error indexing value for given keychain: {keychain[:_idx+1]}')
@@ -66,7 +65,7 @@ def multikey_index(value, keychain, _idx=0, graceful=False):
     return multikey_index(subset, keychain, _idx=_idx+1, graceful=graceful)
 
 
-def find_and_replace(config, target, lookup={}):
+def find_and_replace(config, target, lookup={}, graceful=False):
 
     ## TODO: if a reference references another reference, defer
 
@@ -74,10 +73,10 @@ def find_and_replace(config, target, lookup={}):
         # this no longer works because we need access to new neighbor values:
         # return {key: recur(val) for key,val in target.items()}
         for key in target.keys():
-            target[key] = find_and_replace(config, target[key], lookup=lookup)
+            target[key] = find_and_replace(config, target[key], lookup=lookup, graceful=graceful)
 
     if isinstance(target, list):
-        return [find_and_replace(config, val, lookup=lookup) for val in target]
+        return [find_and_replace(config, val, lookup=lookup, graceful=graceful) for val in target]
 
     if isinstance(target, str):
 
@@ -90,7 +89,7 @@ def find_and_replace(config, target, lookup={}):
                 break
             keychain = match.group()[2:-1].split('.')
             span = match.span()
-            new_value = multikey_index(lookup, keychain, graceful=not lookup)
+            new_value = multikey_index(lookup, keychain, graceful=graceful or not lookup)
             if new_value is not None:
                 target = target[:span[0]] + new_value + target[span[1]:]
             else:
@@ -102,14 +101,14 @@ def find_and_replace(config, target, lookup={}):
         ## replace controls matching %{} syntax with file content found at path
         if re.match('^\%\{[A-Za-z0-9._/]*\}$', target):
             path = target[2:-1]
-            with open(path, 'r') as f:
-                try:
+            try:
+                with open(path, 'r') as f:
                     if path.split('.')[-1] in ['json', 'hjson']:
                         return json.load(f)
                     else:
                         return f.read()
-                except FileNotFoundError:
-                    return None
+            except FileNotFoundError:
+                return None
 
         ## replace controls matching ${} syntax with that value found in config
         while True:
@@ -120,7 +119,7 @@ def find_and_replace(config, target, lookup={}):
                 break
             keychain = match.group()[2:-1].split('.')
             span = match.span()
-            new_value = multikey_index(config, keychain)
+            new_value = multikey_index(config, keychain, graceful=graceful)
             ## If the new value is not a string, we might replace the whole thing
             if not isinstance(new_value, str):
                 ## If the span stretches the whole target, we assume a total replace
@@ -133,7 +132,7 @@ def find_and_replace(config, target, lookup={}):
     return target
 
 
-def generate_config(stage=None):
+def generate_config(stage=None, graceful=True):
     with open(f'{local_dir}/../public.gen.hjson') as f:
         config = hjson.load(f)
 
@@ -141,7 +140,7 @@ def generate_config(stage=None):
         new_info = hjson.load(f)
         assimilate(config, new_info)
 
-    config = find_and_replace(config, config)
+    config = find_and_replace(config, config, graceful=graceful)
 
     if stage is not None:
         assert stage in config['stages'], f'unexpected stage: `{stage}`'
@@ -157,6 +156,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--stage', '-s', type=str)
+    parser.add_argument('--debug', '-d', action='store_true')
     args = parser.parse_args()
 
-    print(json.dumps(generate_config(args.stage), indent=4))
+    print(json.dumps(generate_config(args.stage, graceful=not args.debug), indent=4))

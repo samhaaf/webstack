@@ -2,20 +2,22 @@
 <!-- <main use:cssVars={css_vars}> -->
 <main>
   {#await document.config}
-    <!-- loading config.. -->
+    loading config..
   {:then config}
     {#await login_check}
-      <!-- checking login.. -->
+      checking login..
     {:then logged_in}
       <div class="content">
         <Router bind:url={url}>
-          <!-- <Navbar/> -->
+          <Navbar {logged_in}/>
           <div class="route-content">
 
             <!-- Routes that require being logged in -->
             <AuthRoute {logged_in} path='/'>Home</AuthRoute>
-            <AuthRoute {logged_in} path='/dev/tests'><DevTests/></AuthRoute>
-            <AuthRoute {logged_in} path='/dev/tokens'><DevTokens/></AuthRoute>
+            <!-- <AuthRoute {logged_in} path='/dev/tests'><DevTests/></AuthRoute> -->
+            <Route path='/dev/tests'><DevTests/></Route>
+            <!-- <AuthRoute {logged_in} path='/dev/tokens'><DevTokens/></AuthRoute> -->
+            <Route path='/dev/tokens'><DevTokens/></Route>
             <AuthRoute {logged_in} path='/logout' return-to='/'><AuthLogout/></AuthRoute>
 
             <!-- Routes that require NOT being logged in -->
@@ -76,11 +78,11 @@
     window.location.href = '/login/?return_url=' + encodeURIComponent( window.location.pathname)
   }
 
-  // login_check.then(logged_in => {
-  //   if (logged_in) {
+  login_check.then(logged_in => {
+    if (logged_in) {
       auth.watch_refresh_token(login_callback, logout_callback);
-  //   }
-  // })
+    }
+  })
 
 
 </script>

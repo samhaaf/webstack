@@ -1,33 +1,91 @@
 {
   "project": {
-    "name": "webstack.3649.design",
+    "name": "webstack",
     "team": "3649.design",
+    "domain": "${project.name}.${project.team}"
+    "namespace": "3649-design-${project.name}",
     "version": "0.3.3",
   }
   "aws": {
-    "namespace_prefix": "${project.team}-${project.name}",
-    "s3_bucket": "${project.name}",
+    "s3_bucket": "${project.domain}",
     "region": "us-east-1"
   }
   "stages": {
     "local": {
       "api": {
-        "url": "http://localhost:8000"
+        "url": "http://localhost:8000",
+        "cors": true
       },
       "database": {
-        "type": "postgres",
+        "build": "docker",
+        "engine": "postgres",
         "name": "postgres",
         "host": "127.0.0.1",
-        "port": "5432"
+        "port": 5432
       }
     },
     "dev": {
       "chalice": "%{../api/.chalice/deployed/dev.json}",
       "api": {
-        "url": "${stages.dev.chalice.resources.3.rest_api_url}",
+        "url": "${stages.dev.chalice.resources.2.rest_api_url}",
+        "build_info": "%{../api/.build/dev.json}",
+        "cors": true,
       },
+      "database": {
+        "build": "rds",
+        "engine": "postgres",
+        "identifier": "general-3649-dev",
+        "name": "${project.name}_dev",
+        "port": 5432,
+        "iam_ruser": "${project.name}_dev_iam_ruser",
+        "iam_rwuser": "${project.name}_dev_iam_rwuser",
+        "iam_admin": "${project.name}_dev_iam_admin",
+        //"build_info": "%{../db/.build/dev.json}"
+      }
       "ui": {
-        "domain": "dev.webstack.3649.design"
+        "domain": "dev.${project.domain}"
+      }
+    },
+    "beta": {
+      "chalice": "%{../api/.chalice/deployed/beta.json}",
+      "api": {
+        "url": "${stages.beta.chalice.resources.3.rest_api_url}",
+        //"build_info": "%{../api/.build/beta.json}"
+      },
+      "database": {
+        "build": "rds",
+        "engine": "postgres",
+        "identifier": "general-3649-dev",
+        "name": "${project.name}_beta",
+        "port": 5432,
+        "iam_ruser": "beta_iam_ruser",
+        "iam_rwuser": "beta_iam_rwuser",
+        "iam_admin": "beta_iam_admin",
+        //"build_info": "%{../db/.build/beta.json}"
+      }
+      "ui": {
+        "domain": "beta.${project.domain}"
+      }
+    },
+    "prod": {
+      "chalice": "%{../api/.chalice/deployed/prod.json}",
+      "api": {
+        "url": "${stagesprod.chalice.resources.3.rest_api_url}",
+        //"build_info": "%{../api/.build/prod.json}"
+      },
+      "database": {
+        "build": "rds",
+        "engine": "postgres",
+        "identifier": "general-3649-dev",
+        "name": "${project.name}_prod",
+        "port": 5432,
+        "iam_ruser": "prod_iam_ruser",
+        "iam_rwuser": "prod_iam_rwuser",
+        "iam_admin": "prod_iam_admin",
+        //"build_info": "%{../db/.build/prod.json}"
+      }
+      "ui": {
+        "domain": "${project.domain}"
       }
     }
   }

@@ -8,6 +8,7 @@ import time
 import copy
 import logging
 from pprint import pprint
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -167,23 +168,29 @@ for path, agg_blob in agg_blobs.items():
         lock_blob['boto3_args'] = file_blob['boto3_args']
 
 
-## generate access policy
- # update policy and policy update time in lock file
+## TODO: generate access policy
+ # TODO: update policy and policy update time in lock file
 
 
 ## start s3 service
 s3 = boto3.client('s3')
 
 
-## update access policy in s3, if applicable
+## TODO: update access policy in s3, if applicable
 
 
 ## push each updated file to the bucket in config['aws']['s3_bucket']
+invalidation_paths = []
 print('Pushing files to AWS Bucket:', config['aws']['s3_bucket'])
 for file_blob in to_upload:
+
+    invalidation_paths.append('/' + '/'.join(file_blob['path'].split('/')[1:]))
+
     key = os.path.join(args.stage, file_blob['path'])
+
     if config['aws'].get('root_path'):
         key = f'{config["aws"]["root_path"]}/{key}'
+
     print(f'..{key}')
     with open(file_blob["path"], 'rb') as f:
         response = s3.put_object(
@@ -197,8 +204,50 @@ for file_blob in to_upload:
         print(response)
 
 
-## TODO: send Distribution invalidation for updated files
 
+## CloudFront
+cloudfront = boto3.client('cloudfront')
+
+
+## create list of distributions
+distributions = []
+pagination_token = None
+while True:
+    if pagination_token:
+        response = cloudfront.list_distributions(Marker=pagination_token)
+    else:
+        response = cloudfront.list_distributions()
+    if len(response['DistributionList']['Items']) == 0:
+        bread
+    distributions += response['DistributionList']['Items']
+    pagination_token = response['DistributionList'].get('NextMarker')
+    if not pagination_token:
+        break
+
+
+## Check for matching cloudfront distribution
+distribution = None
+for dist in distributions:
+    if config['ui']['domain'] in dist['Aliases']['Items']:
+        distribution = dist
+        print('CloudFront Distribution found:', distribution['Id'])
+
+
+## send Distribution invalidation for updated files, if there is one
+if distribution is not None:
+    caller_reference = str(time.time())
+    print('Sending Distribution Invalidation:', caller_reference)
+    response = cloudfront.create_invalidation(
+        DistributionId=distribution['Id'],
+        InvalidationBatch={
+            'Paths': {
+                'Quantity': len(to_upload),
+                'Items': invalidation_paths
+            },
+            'CallerReference': caller_reference
+        }
+    )
+    # print(response)
 
 ## persist changes in .lock.json
 with open('.lock.json', 'w') as f:

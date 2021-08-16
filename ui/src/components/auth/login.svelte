@@ -7,6 +7,7 @@
     <label for='password'>Password:</label>
     <input name='password' type='password' bind:value={credentials.password}>
     <button on:click={login_and_redirect}>Submit</button>
+    <div>Or <a href='/register'>register</a></div>
   </div>
 </div>
 
@@ -42,8 +43,10 @@
       console.log('success?', success);
       const url_params = get_query_params(window.location.search);
       if (success) {
-        console.log('redirecting...');
-        window.location.replace(url_params['return_url'] || '/')
+        setTimeout(() => {
+          console.log('redirecting...');
+          window.location.replace(url_params['return_url'] || '/')
+        }, 3000)
       }
     })
   }

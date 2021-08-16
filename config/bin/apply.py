@@ -39,7 +39,7 @@ for file_path in list_dir_recur(args.input):
     with open(file_path) as f:
         target = hjson.load(f) if file_path[-5:] == '.json' else f.readlines()
 
-    result = find_and_replace(config, target, lookup={'stage': args.stage})
+    result = find_and_replace(config, target, lookup={'stage': args.stage}, graceful=True)
 
     if file_path[-5:] == '.json':
         result = json.dumps(result, indent=4*args.pretty)

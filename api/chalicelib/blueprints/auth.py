@@ -1,21 +1,25 @@
-from chalice import Blueprint, BadRequestError, UnauthorizedError, AuthResponse, Response
+from chalice import Blueprint, BadRequestError, UnauthorizedError, AuthResponse, ConvertToMiddleware
 import json
 from ..orm import Session
 from ..orm.users import User
 from ..orm.tokens import RefreshToken
 from ..tokens import encode_jwt, decode_jwt, create_refresh_token, is_refresh_token_valid
-from ..cookies import generate_cookie_header
 import hashlib
 import os
 import time
 from pprint import pprint
+from ..config import cors
+from ..responses import Response, generate_cookie_header
+# from ..middleware import register_middleware,
 
 
-blueprint = Blueprint(__name__)
+blueprint = Response.blueprint = Blueprint(__name__)
+# register_middleware(blueprint, format_response)
 
 
 
-@blueprint.route('/register', methods=['POST'], cors=True)
+@blueprint.route('/register', methods=['POST'], cors=cors)
+# @format_response
 def POST_register():
     request = json.loads(blueprint.current_request.raw_body.decode())
 
@@ -37,17 +41,17 @@ def POST_register():
         if match:
             print(request)
             print(match)
-            return {
+            return Response(403, {
                 "status": "failure",
                 "message": "User already exists with given username"
-            }
+            })
 
         match = session.query(User).filter(User.email_address == request['email_address']).first()
         if match:
-            return {
+            return Response(403, {
                 "status": "failure",
                 "message": "User already exists with given email address"
-            }
+            })
 
 
         ## Create the password salt and password hash
@@ -77,9 +81,9 @@ def POST_register():
         session.commit()
 
 
-        return {
+        return Response(200, {
             "status": "success"
-        }
+        })
 
     ## Close database session
     finally:
@@ -87,7 +91,7 @@ def POST_register():
 
 
 
-@blueprint.route('/login', methods=['POST'], cors=True, content_types=['text/plain'])
+@blueprint.route('/login', methods=['POST'], cors=cors, content_types=['text/plain'])
 def POST_login():
     request = json.loads(blueprint.current_request.raw_body.decode())
 
@@ -98,16 +102,16 @@ def POST_login():
         return 400, f'missing all or some expected arguments from: {expected_args}'
 
 
-    ## Open database session
+    # ## Open database session
     with Session() as session:
 
         ## Load the matching User record from the DB
         user = session.query(User).filter(User.username == request['username']).first()
         if user is None:
-            return {
+            return Response(403, {
                 "status": "failure",
                 "message": "No user found with the requested username"
-            }
+            })
 
 
         ## Check the submitted password against the User password hash and salt
@@ -122,10 +126,10 @@ def POST_login():
 
         ## If the password hashes don't match, fail
         if password_hash != user.password_hash:
-            return {
+            return Response(403, {
                 'status': "failure",
                 'message': 'incorrect password'
-            }
+            })
 
 
         ## create new refresh token for this user
@@ -135,33 +139,25 @@ def POST_login():
             session=session
         )
 
-        headers = {
-            "Content-Type": "application/json",
-            "Set-Cookie": generate_cookie_header(
-                name = 'refresh-token',
-                value = encode_jwt({
-                    "sid": new_refresh_token.sid,
-                    "ttl": new_refresh_token.time_to_live,
-                    "user_sid": new_refresh_token.user_sid
-                }),
-                http_only = True,
-                max_age = new_refresh_token.time_left
-            ),
-            "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-            'Access-Control-Allow-Credentials': 'true',
-        }
 
         ## return
-        return Response(
-            status_code = 200,
-            body = {
+        return Response(200, {
                 "status": "success",
                 "ttl": new_refresh_token.time_left,
                 "refresh_token_sid": new_refresh_token.sid
             },
-            headers = headers
+            headers = {
+                "Set-Cookie": generate_cookie_header(
+                    name = 'refresh-token',
+                    value = encode_jwt({
+                        "sid": new_refresh_token.sid,
+                        "ttl": new_refresh_token.time_to_live,
+                        "user_sid": new_refresh_token.user_sid
+                    }),
+                    http_only = True,
+                    max_age = new_refresh_token.time_left
+            )}
         )
-
 
 
 
@@ -170,60 +166,43 @@ def check_refresh_token(session=None):
     ## Get refresh token from cookies
     refresh_token_cookie_string = None
     for cookie_str in blueprint.current_request.headers.get('cookie', '').split(';'):
-        name, value = cookie_str.strip().split('=')
+        print('cookie_str', repr(cookie_str))
+        try:
+            name, value = cookie_str.strip().split('=')
+        except ValueError:
+            continue
         if name == 'refresh-token':
             refresh_token_cookie_string = value
 
 
     ## If no refresh-token cookie; refuse
     if not refresh_token_cookie_string:
-        return Response(
-            status_code = 403,
-            body = {
-                'status': 'failure',
-                'message': 'no refresh-token cookie'
-            },
-            headers = {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
-        ), None
+        print(1)
+        return Response(403, {
+            'status': 'failure',
+            'message': 'no refresh-token cookie'
+        }), None
 
 
     ## decrypt refresh_token
     try:
         refresh_token_cookie = decode_jwt(refresh_token_cookie_string)
     except:
-        return Response(
-            status_code = 403,
-            body = {
-                'status': 'failure',
-                'message': 'could not decode refresh-token'
-            },
-            headers = {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
-        ), None
+        print(2)
+        return Response(403, {
+            'status': 'failure',
+            'message': 'could not decode refresh-token'
+        }), None
 
 
     ## Assert that refresh token has valid format
     for ix, prop in enumerate(['sid', 'user_sid', 'ttl']):
         if prop not in refresh_token_cookie:
-            return Response(
-                status_code = 403,
-                body = {
-                    'status': 'failure',
-                    'message': f'refresh token had invalid format [{ix}]'
-                },
-                headers = {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                    'Access-Control-Allow-Credentials': 'true',
-                }
-            ), None
+            print(3)
+            return Response(403, {
+                'status': 'failure',
+                'message': f'refresh token had invalid format [{ix}]'
+            }), None
 
 
     ## Open session
@@ -238,35 +217,21 @@ def check_refresh_token(session=None):
 
         ## Determine if refresh token has expired
         if refresh_token.expired:
-            return Response(
-                status_code = 403,
-                body = {
-                    'status': 'failure',
-                    'message': f'refresh token has expired'
-                },
-                headers = {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                    'Access-Control-Allow-Credentials': 'true',
-                }
-            ), None
+            print(4)
+            return Response(403, {
+                'status': 'failure',
+                'message': f'refresh token has expired'
+            }), None
 
 
         ## Determine if refresh token has been invalidated
         if refresh_token.invalidated:
             print('refresh token sid', refresh_token.sid)
-            return Response(
-                status_code = 403,
-                body = {
-                    'status': 'failure',
-                    'message': f'refresh token has been invalidated'
-                },
-                headers = {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                    'Access-Control-Allow-Credentials': 'true',
-                }
-            ), None
+            print(5)
+            return Response(403, {
+                'status': 'failure',
+                'message': f'refresh token has been invalidated'
+            }), None
 
 
         return None, refresh_token_cookie
@@ -278,7 +243,7 @@ def check_refresh_token(session=None):
 
 
 
-@blueprint.route('/new_refresh_token', methods=['GET'], cors=True)
+@blueprint.route('/new_refresh_token', methods=['GET'], cors=cors)
 def new_refresh_token():
 
     ## Open database session
@@ -299,15 +264,12 @@ def new_refresh_token():
 
 
         ## return
-        return Response(
-            status_code = 200,
-            body = {
+        return Response(200, {
                 "status": "success",
                 "ttl": new_refresh_token.time_left,
                 "refresh_token_sid": new_refresh_token.sid
             },
             headers = {
-                "Content-Type": "application/json",
                 "Set-Cookie": generate_cookie_header(
                     name = 'refresh-token',
                     value = encode_jwt({
@@ -317,39 +279,31 @@ def new_refresh_token():
                     }),
                     http_only = True,
                     max_age = new_refresh_token.time_left
-                ),
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
+            )}
         )
 
 
 
-@blueprint.route('/check_refresh_token', methods=['GET'], cors=True)
+@blueprint.route('/check_refresh_token', methods=['GET'], cors=cors)
 def _check_refresh_token():
 
     ## Check the refresh token
     error, refresh_token = check_refresh_token()
     if error:
+        print('/check_refresh_token error')
         return error
 
+    print('Got refresh token', refresh_token)
+
     ## return
-    return Response(
-        status_code = 200,
-        body = {
-            "status": "success",
-            "refresh_token_sid": refresh_token['sid']
-        },
-        headers = {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-            'Access-Control-Allow-Credentials': 'true',
-        }
-    )
+    return Response(200, {
+        "status": "success",
+        "refresh_token_sid": refresh_token['sid']
+    })
 
 
 
-@blueprint.route('/invalidate_refresh_token', methods=['GET'], cors=True)
+@blueprint.route('/invalidate_refresh_token', methods=['GET'], cors=cors)
 def invalidate_refresh_token():
 
     ## Open database session
@@ -373,22 +327,14 @@ def invalidate_refresh_token():
 
 
         ## return
-        return Response(
-            status_code = 200,
-            body = {
-                "status": "success",
-                "refresh_token_sid": refresh_token['sid']
-            },
-            headers = {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
-        )
+        return Response(200, {
+            "status": "success",
+            "refresh_token_sid": refresh_token['sid']
+        })
 
 
 
-@blueprint.route('/new_access_token', methods=['GET'], cors=True)
+@blueprint.route('/new_access_token', methods=['GET'], cors=cors)
 def new_access_token():
 
     with Session() as session:
@@ -409,7 +355,7 @@ def new_access_token():
         #         },
         #         headers = {
         #             "Content-Type": "application/json",
-        #             "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
+        #             "Access-Control-Allow-Origin": blueprint.current_request.headers.get('origin', '*'),
         #             'Access-Control-Allow-Credentials': 'true',
         #         }
         #     )
@@ -434,16 +380,12 @@ def new_access_token():
             "refresh_token_sid": refresh_token['sid'],
         },
         headers = {
-            "Content-Type": "application/json",
             "Set-Cookie": generate_cookie_header(
                 name = 'access-token',
                 value = encode_jwt(access_token),
                 http_only = True,
                 max_age = access_token['ttl']
-            ),
-            "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-            'Access-Control-Allow-Credentials': 'true',
-        }
+        )}
     )
 
 
@@ -460,75 +402,43 @@ def check_access_token():
 
     ## If no access token cookie; refuse
     if not access_token_cookie_string:
-        return Response(
-            status_code = 403,
-            body = {
-                'status': 'failure',
-                'message': 'no access-token cookie'
-            },
-            headers = {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
-        ), None
+        return Response(403, {
+            'status': 'failure',
+            'message': 'no access-token cookie'
+        }), None
 
 
     ## decrypt access token
     try:
         access_token = decode_jwt(access_token_cookie_string)
     except:
-        return Response(
-            status_code = 403,
-            body = {
-                'status': 'failure',
-                'message': 'could not decode access-token'
-            },
-            headers = {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
-        ), None
+        return Response(403, {
+            'status': 'failure',
+            'message': 'could not decode access-token'
+        }), None
 
 
     ## Assert that access token has valid format
     for ix, prop in enumerate(['class', 'user_sid', 'refresh_token_sid', 'ttl', 'created_at']):
         if prop not in access_token:
-            return Response(
-                status_code = 403,
-                body = {
-                    'status': 'failure',
-                    'message': f'access token had invalid format [{ix}]'
-                },
-                headers = {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                    'Access-Control-Allow-Credentials': 'true',
-                }
-            ), None
+            return Response(403, {
+                'status': 'failure',
+                'message': f'access token had invalid format [{ix}]'
+            }), None
 
 
     ## Assert that the access token has not expired
     if time.time() - access_token['created_at'] > access_token['ttl']:
-        return Response(
-            status_code = 403,
-            body = {
-                'status': 'failure',
-                'message': 'access-token expired'
-            },
-            headers = {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-                'Access-Control-Allow-Credentials': 'true',
-            }
-        ), None
+        return Response(403, {
+            'status': 'failure',
+            'message': 'access-token expired'
+        }), None
 
     return None, access_token
 
 
 
-@blueprint.route('/check_access_token', methods=['GET'], cors=True)
+@blueprint.route('/check_access_token', methods=['GET'], cors=cors)
 def _check_access_token():
 
     ## Check the refresh token
@@ -537,15 +447,7 @@ def _check_access_token():
         return error
 
     ## return
-    return Response(
-        status_code = 200,
-        body = {
-            "status": "success",
-            "access_token_sid": access_token['sid']
-        },
-        headers = {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": blueprint.current_request.headers['origin'],
-            'Access-Control-Allow-Credentials': 'true',
-        }
-    )
+    return Response(200, {
+        "status": "success",
+        "access_token_sid": access_token['sid']
+    })

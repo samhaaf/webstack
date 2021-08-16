@@ -1,4 +1,6 @@
 .chalice/deployments/
+.chalice/deployed/
+.chalice/config.json
 .chalice/venv/
 .chalice/config.json
 poetry.lock

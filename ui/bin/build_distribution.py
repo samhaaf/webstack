@@ -39,7 +39,6 @@ except json.decoder.JSONDecodeError:
 
 
 
-
 ## S3 Bucket
 s3 = boto3.client('s3')
 
@@ -396,8 +395,8 @@ if distribution is None:
                         'Key': 'stage',
                         'Value': args.stage,
                     },{
-                        'Key': 'project',
-                        'Value': config['project']['name']
+                        'Key': 'namespace',
+                        'Value': config['project']['namespace']
                     }
                 ]
             }

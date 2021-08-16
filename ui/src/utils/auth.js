@@ -144,11 +144,16 @@ async function watch_refresh_token(login_callback, logout_callback) {
   let validation_time = localStorage.getItem('refresh_token_validation_time');
   let invalidation_time = localStorage.getItem('refresh_token_invalidation_time');
 
-  if (ttl == null) { throw new Error('Missing refresh_token_validation_time in localStorate') }
-  if (validation_time == null) { throw new Error('Missing refresh_token_validation_time in localStorate') }
+  // if (ttl == null) {
+  //   throw new Error('Missing refresh_token_validation_time in localStorage')
+  // }
+  // if (validation_time == null) {
+  //   throw new Error('Missing refresh_token_validation_time in localStorate')
+  // }
 
   // check if storage indicates that the token has been invalidated,
-  let valid_refresh_token = (invalidation_time == null) || (validation_time > invalidation_time)
+  let valid_refresh_token = (invalidation_time == null) ? false : (validation_time > invalidation_time)
+
 
   // add an event listener to storage to detect an invalidation from another tab
   window.addEventListener('storage', (event) => {

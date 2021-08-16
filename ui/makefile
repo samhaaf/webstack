@@ -40,10 +40,10 @@ serve: build
 	npm run start
 
 
-dev: build
+local: build
 	npm run dev
 
 
 deploy: assert-stage build
-	@poetry run python bin/setup_distribution.py --stage $(stage)
+	@poetry run python bin/build_distribution.py --stage $(stage)
 	@poetry run python bin/sync_to_s3.py --stage $(stage)

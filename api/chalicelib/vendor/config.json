@@ -1,0 +1,57 @@
+{
+    "api": {
+        "url": "https://fh9p8worc2.execute-api.us-east-1.amazonaws.com/api/",
+        "build_info": {
+            "iam_role": {
+                "Path": "/",
+                "RoleName": "api-3649-design-webstack-dev",
+                "RoleId": "AROAQNYET7YRY75KWOMQK",
+                "Arn": "arn:aws:iam::029537599011:role/api-3649-design-webstack-dev",
+                "CreateDate": "07/26/2021, 03:18:36",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Description": "A role to access RDS resources",
+                "MaxSessionDuration": 3600,
+                "Tags": [
+                    {
+                        "Key": "stage",
+                        "Value": "dev"
+                    },
+                    {
+                        "Key": "namespace",
+                        "Value": "3649-design-webstack"
+                    }
+                ],
+                "RoleLastUsed": {
+                    "LastUsedDate": "08/16/2021, 18:08:33",
+                    "Region": "us-east-1"
+                }
+            }
+        },
+        "cors": true,
+        "jwt_secret": "jlT-S1selYeTVt2NjPzqwD0s70RRsoPcVLQN9MdKWrI"
+    },
+    "database": {
+        "build": "rds",
+        "engine": "postgres",
+        "identifier": "general-3649-dev",
+        "name": "webstack_dev",
+        "port": 5432,
+        "iam_ruser": "webstack_dev_iam_ruser",
+        "iam_rwuser": "webstack_dev_iam_rwuser",
+        "iam_admin": "webstack_dev_iam_admin",
+        "master_username": "postgres",
+        "master_password": "vGsZg0dSBMu9pa3Mc2AX0E6VXU5TfT9zot7VMQHO2dPmHKXQ2UUUcvtQ8XW-OV9biAHbpAVMYdUpB6Nw"
+    },
+    "jwt_secret": "jlT-S1selYeTVt2NjPzqwD0s70RRsoPcVLQN9MdKWrI"
+}
