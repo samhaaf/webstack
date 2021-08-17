@@ -32,7 +32,6 @@ function fetch_manager(url, args, timeout) {
 
 function GET(url) {
   return document.config.then((config) => {
-    console.log('config', config);
     let mode = !!config.api.cors ? 'cors' : 'no-cors';
     return fetch_manager(url, {
       method: 'GET',
@@ -45,7 +44,6 @@ function GET(url) {
 
 function POST(url, payload) {
   return document.config.then((config) => {
-    console.log(config.api);
     let mode = !!config.api.cors ? 'cors' : 'no-cors';
     console.log('mode', mode);
     return fetch_manager(url, {

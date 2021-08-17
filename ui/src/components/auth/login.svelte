@@ -43,10 +43,10 @@
       console.log('success?', success);
       const url_params = get_query_params(window.location.search);
       if (success) {
-        setTimeout(() => {
+        // setTimeout(() => {
           console.log('redirecting...');
           window.location.replace(url_params['return_url'] || '/')
-        }, 3000)
+        // }, 3000)
       }
     })
   }

@@ -4,7 +4,7 @@
     "team": "3649.design",
     "domain": "${project.name}.${project.team}"
     "namespace": "3649-design-${project.name}",
-    "version": "0.3.3",
+    "version": "1.0.0",
   }
   "aws": {
     "s3_bucket": "${project.domain}",
@@ -14,7 +14,8 @@
     "local": {
       "api": {
         "url": "http://localhost:8000",
-        "cors": true
+        "cors": true,
+        "is_https": false,
       },
       "database": {
         "build": "docker",
@@ -30,6 +31,7 @@
         "url": "${stages.dev.chalice.resources.2.rest_api_url}",
         "build_info": "%{../api/.build/dev.json}",
         "cors": true,
+        "is_https": true,
       },
       "database": {
         "build": "rds",

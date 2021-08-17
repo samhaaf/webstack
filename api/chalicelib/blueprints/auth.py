@@ -10,6 +10,7 @@ import time
 from pprint import pprint
 from ..config import cors
 from ..responses import Response, generate_cookie_header
+from ..requests import read_cookies
 # from ..middleware import register_middleware,
 
 
@@ -145,18 +146,16 @@ def POST_login():
                 "status": "success",
                 "ttl": new_refresh_token.time_left,
                 "refresh_token_sid": new_refresh_token.sid
-            },
-            headers = {
-                "Set-Cookie": generate_cookie_header(
-                    name = 'refresh-token',
-                    value = encode_jwt({
-                        "sid": new_refresh_token.sid,
-                        "ttl": new_refresh_token.time_to_live,
-                        "user_sid": new_refresh_token.user_sid
-                    }),
-                    http_only = True,
-                    max_age = new_refresh_token.time_left
-            )}
+            }, set_cookie = {
+                'name': 'refresh-token',
+                'value': encode_jwt({
+                    "sid": new_refresh_token.sid,
+                    'created_at': new_refresh_token.created_at.timestamp(),
+                    "ttl": new_refresh_token.time_to_live,
+                    "user_sid": new_refresh_token.user_sid
+                }),
+                'max_age': new_refresh_token.time_left
+            }
         )
 
 
@@ -164,23 +163,15 @@ def POST_login():
 def check_refresh_token(session=None):
 
     ## Get refresh token from cookies
-    refresh_token_cookie_string = None
-    for cookie_str in blueprint.current_request.headers.get('cookie', '').split(';'):
-        print('cookie_str', repr(cookie_str))
-        try:
-            name, value = cookie_str.strip().split('=')
-        except ValueError:
-            continue
-        if name == 'refresh-token':
-            refresh_token_cookie_string = value
+    refresh_token_cookie_string = read_cookies(blueprint.current_request).get('refresh-token')
 
 
     ## If no refresh-token cookie; refuse
     if not refresh_token_cookie_string:
-        print(1)
         return Response(403, {
             'status': 'failure',
-            'message': 'no refresh-token cookie'
+            'message': 'no refresh-token cookie',
+            'refresh_token_invalidated': True
         }), None
 
 
@@ -188,20 +179,20 @@ def check_refresh_token(session=None):
     try:
         refresh_token_cookie = decode_jwt(refresh_token_cookie_string)
     except:
-        print(2)
         return Response(403, {
             'status': 'failure',
-            'message': 'could not decode refresh-token'
+            'message': 'could not decode refresh-token',
+            'refresh_token_invalidated': True
         }), None
 
 
     ## Assert that refresh token has valid format
     for ix, prop in enumerate(['sid', 'user_sid', 'ttl']):
         if prop not in refresh_token_cookie:
-            print(3)
             return Response(403, {
                 'status': 'failure',
-                'message': f'refresh token had invalid format [{ix}]'
+                'message': f'refresh token had invalid format [{ix}]',
+                'refresh_token_invalidated': True
             }), None
 
 
@@ -217,24 +208,26 @@ def check_refresh_token(session=None):
 
         ## Determine if refresh token has expired
         if refresh_token.expired:
-            print(4)
             return Response(403, {
                 'status': 'failure',
-                'message': f'refresh token has expired'
+                'message': f'refresh token has expired',
+                'refresh_token_invalidated': True
             }), None
 
 
         ## Determine if refresh token has been invalidated
         if refresh_token.invalidated:
-            print('refresh token sid', refresh_token.sid)
-            print(5)
             return Response(403, {
                 'status': 'failure',
-                'message': f'refresh token has been invalidated'
+                'message': f'refresh token has been invalidated',
+                'refresh_token_invalidated': True
             }), None
 
 
-        return None, refresh_token_cookie
+        return None, {
+            **refresh_token_cookie,
+            'time_left': refresh_token.time_left
+        }
 
     ## Close database session, if applicable
     finally:
@@ -268,18 +261,16 @@ def new_refresh_token():
                 "status": "success",
                 "ttl": new_refresh_token.time_left,
                 "refresh_token_sid": new_refresh_token.sid
-            },
-            headers = {
-                "Set-Cookie": generate_cookie_header(
-                    name = 'refresh-token',
-                    value = encode_jwt({
-                        "sid": new_refresh_token.sid,
-                        "ttl": new_refresh_token.time_to_live,
-                        "user_sid": new_refresh_token.user_sid
-                    }),
-                    http_only = True,
-                    max_age = new_refresh_token.time_left
-            )}
+            }, set_cookie = {
+                'name': 'refresh-token',
+                'value': encode_jwt({
+                    "sid": new_refresh_token.sid,
+                    'created_at': new_refresh_token.created_at.timestamp(),
+                    "ttl": new_refresh_token.time_to_live,
+                    "user_sid": new_refresh_token.user_sid,
+                }),
+                'max_age': new_refresh_token.time_left
+            }
         )
 
 
@@ -293,12 +284,11 @@ def _check_refresh_token():
         print('/check_refresh_token error')
         return error
 
-    print('Got refresh token', refresh_token)
-
     ## return
     return Response(200, {
         "status": "success",
-        "refresh_token_sid": refresh_token['sid']
+        "refresh_token_sid": refresh_token['sid'],
+        "ttl": refresh_token['time_left']
     })
 
 
@@ -320,6 +310,7 @@ def invalidate_refresh_token():
             RefreshToken.sid == refresh_token['sid']
         ).first()
         token_record.invalidated = True
+
 
          ## add and commit
         session.add(token_record)
@@ -378,14 +369,11 @@ def new_access_token():
             "status": "success",
             "ttl": access_token['ttl'],
             "refresh_token_sid": refresh_token['sid'],
-        },
-        headers = {
-            "Set-Cookie": generate_cookie_header(
-                name = 'access-token',
-                value = encode_jwt(access_token),
-                http_only = True,
-                max_age = access_token['ttl']
-        )}
+        }, set_cookie = {
+            'name': 'access-token',
+            'value': encode_jwt(access_token),
+            'max_age': access_token['ttl']
+        }
     )
 
 
@@ -393,18 +381,15 @@ def new_access_token():
 def check_access_token():
 
     ## Get access token from cookies
-    access_token_cookie_string = None
-    for cookie_str in blueprint.current_request.headers.get('cookie', '').split(';'):
-        name, value = cookie_str.strip().split('=')
-        if name == 'access-token':
-            access_token_cookie_string = value
+    access_token_cookie_string = read_cookies(blueprint.current_request).get('access-token')
 
 
     ## If no access token cookie; refuse
     if not access_token_cookie_string:
         return Response(403, {
             'status': 'failure',
-            'message': 'no access-token cookie'
+            'message': 'no access-token cookie',
+            'access_token_invalidated': True
         }), None
 
 
@@ -414,7 +399,8 @@ def check_access_token():
     except:
         return Response(403, {
             'status': 'failure',
-            'message': 'could not decode access-token'
+            'message': 'could not decode access-token',
+            'access_token_invalidated': True
         }), None
 
 
@@ -423,7 +409,8 @@ def check_access_token():
         if prop not in access_token:
             return Response(403, {
                 'status': 'failure',
-                'message': f'access token had invalid format [{ix}]'
+                'message': f'access token had invalid format [{ix}]',
+                'access_token_invalidated': True
             }), None
 
 
@@ -431,7 +418,8 @@ def check_access_token():
     if time.time() - access_token['created_at'] > access_token['ttl']:
         return Response(403, {
             'status': 'failure',
-            'message': 'access-token expired'
+            'message': 'access-token expired',
+            'access_token_invalidated': True
         }), None
 
     return None, access_token
@@ -449,5 +437,35 @@ def _check_access_token():
     ## return
     return Response(200, {
         "status": "success",
-        "access_token_sid": access_token['sid']
+        'ttl': access_token['ttl'] - (time.time() - access_token['created_at'])
     })
+
+
+
+@blueprint.route('/set_cookie', methods=['POST'], cors=cors, content_types=['text/plain'])
+def POST_login():
+    request = json.loads(blueprint.current_request.raw_body.decode())
+
+    print('Setting cookie', dict(
+        name = 'simple_key',
+        value = 'simple_value',
+        http_only = request.get('http_only', False),
+        domain = request.get('domain'),
+        same_site = request.get('same_site'),
+        path = request.get('path', '/'),
+        secure = request.get('secure')
+    ))
+
+    ## return
+    return Response(200, {
+            "status": "success",
+        }, set_cookie = {
+            'name': 'simple_key',
+            'value': 'simple_value',
+            'http_only': request.get('http_only', False),
+            'domain': request.get('domain'),
+            'same_site': request.get('same_site'),
+            'path': request.get('path', '/'),
+            'secure': request.get('secure')
+        }
+    )

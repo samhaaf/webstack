@@ -1,18 +1,35 @@
 import {GET, POST} from './calls.js'
 
 
+function validation_alert(token_name, ttl){
+  // send a token validation message to other tabs
+  localStorage.setItem(token_name + '_ttl', ttl)
+  localStorage.setItem(token_name + '_validation_time', Date.now())
+
+  // send a token invalidation maessage to this tab
+  window.dispatchEvent(new Event(token_name + '_validation'));
+}
+
+
+function invalidation_alert(token_name){
+    // send a token invalidation message to other tabs
+    localStorage.setItem(token_name + '_invalidation_time', Date.now());
+
+    // send a token invalidation maessage to this tab
+    window.dispatchEvent(new Event(token_name + '_invalidation'));
+}
+
 
 function do_login(credentials) {
   return document.config.then((config) => {
     return POST(config.api.url + '/login', credentials)
     .then((payload) => {
       console.log('login successful', payload)
-      localStorage.setItem('refresh_token_validation_time', Date.now())
-      localStorage.setItem('refresh_token_ttl', payload.ttl)
+      validation_alert('refresh_token', payload.ttl)
       return payload
     })
     .catch((error) => {
-      console.log('refresh token check failed', error)
+      console.log('/login call failed', error)
       return false
     })
   })
@@ -24,12 +41,14 @@ function get_refresh_token() {
     return GET(config.api.url + '/new_refresh_token')
     .then((payload) => {
       console.log('refresh token gotten', payload)
-      localStorage.setItem('refresh_token_validation_time', Date.now())
-      localStorage.setItem('refresh_token_ttl', payload.ttl)
+      validation_alert('refresh_token', payload.ttl)
       return payload
     })
     .catch((error) => {
-      console.log('refresh token request failed', error)
+      console.log('refresh token get request failed', error)
+      if (error['refresh_token_invalidated']) {
+        invalidation_alert('refresh_token')
+      }
       return false
     })
   })
@@ -40,11 +59,15 @@ function check_refresh_token() {
   return document.config.then((config) => {
     return GET(config.api.url + '/check_refresh_token')
     .then((payload) => {
-      console.log('refresh token valid', payload)
+      console.log('refresh token check valid', payload)
+      validation_alert('refresh_token', payload.ttl)
       return payload
     })
     .catch((error) => {
       console.log('refresh token check failed', error)
+      if (!!error['refresh_token_invalidated']) {
+        invalidation_alert('refresh_token')
+      }
       return false
     })
   })
@@ -56,17 +79,14 @@ function invalidate_refresh_token() {
     return GET(config.api.url + '/invalidate_refresh_token')
     .then((payload) => {
       console.log('refresh token invalidated', payload)
-
-      // send a token invalidation message to other tabs
-      localStorage.setItem('refresh_token_invalidation_time', Date.now());
-
-      // send a token invalidation maessage to this tab
-      window.dispatchEvent(new Event('refresh_token_invalidation'));
-
+      invalidation_alert('refresh_token')
       return payload
     })
     .catch((error) => {
       console.log('invalidation of refresh token failed', error)
+      if (!!error['refresh_token_invalidated']) {
+        invalidation_alert('refresh_token')
+      }
       return false
     })
   })
@@ -78,17 +98,14 @@ function invalidate_all_refresh_tokens() {
     return GET(config.api.url + '/invalidate_all_refresh_tokens')
     .then((payload) => {
       console.log('all refresh tokens invalidated', payload)
-
-      // send a token invalidation message to other tabs
-      localStorage.setItem('refresh_token_invalidation_time', Date.now());
-
-      // send a token invalidation maessage to this tab
-      window.dispatchEvent(new Event('refresh_token_invalidation'));
-
+      invalidation_alert('refresh_token')
       return payload
     })
     .catch((error) => {
       console.log('invalidation of all refresh tokens failed', error)
+      if (!!error['refresh_token_invalidated']) {
+        invalidation_alert('refresh_token')
+      }
       return false
     })
   })
@@ -99,13 +116,15 @@ function get_access_token() {
   return document.config.then((config) => {
     return GET(config.api.url + '/new_access_token')
     .then((payload) => {
-    localStorage.setItem('access_token_validation_time', Date.now())
-    localStorage.setItem('access_token_ttl', payload.ttl)
       console.log('access token gotten', payload)
+      validation_alert('access_token', payload.ttl)
       return payload
     })
     .catch((error) => {
       console.log('access token request failed', error)
+      if (!!error['refresh_token_invalidated']) {
+        invalidation_alert('refresh_token')
+      }
       return false
     })
   })
@@ -116,11 +135,15 @@ function check_access_token() {
   return document.config.then((config) => {
     return GET(config.api.url + '/check_access_token')
     .then((payload) => {
-      console.log('access token valid', payload)
+      console.log('access token check valid', payload)
+      validation_alert('access_token', payload.ttl)
       return payload
     })
     .catch((error) => {
       console.log('access token check failed', error)
+      if (!!error['access_token_invalidated']) {
+        invalidation_alert('access_token')
+      }
       return false
     })
   })
@@ -151,13 +174,13 @@ async function watch_refresh_token(login_callback, logout_callback) {
   //   throw new Error('Missing refresh_token_validation_time in localStorate')
   // }
 
-  // check if storage indicates that the token has been invalidated,
-  let valid_refresh_token = (invalidation_time == null) ? false : (validation_time > invalidation_time)
-
+  // check if storage indicates that the token has been invalidated
+  let valid_refresh_token = (invalidation_time == null) ? true : (validation_time > invalidation_time)
 
   // add an event listener to storage to detect an invalidation from another tab
   window.addEventListener('storage', (event) => {
     if (event.key == 'refresh_token_invalidation_time') {
+      console.log('refresh-token invalidation detected');
       invalidation_time = event.newValue;
       if (invalidation_time > validation_time) {
         valid_refresh_token = false;
@@ -169,6 +192,7 @@ async function watch_refresh_token(login_callback, logout_callback) {
   // add an event listener to storage to detect a validation from another tab
   window.addEventListener('storage', (event) => {
     if (event.key == 'refresh_token_validation_time') {
+      console.log('refresh-token validation detected');
       if (!valid_refresh_token) {
         validation_time = event.newValue;
         valid_refresh_token = true
@@ -180,6 +204,7 @@ async function watch_refresh_token(login_callback, logout_callback) {
 
   // add an event listener to storage to detect an invalidation from this tab
   window.addEventListener('refresh_token_invalidation', () => {
+    console.log('refresh-token invalidation detected');
     valid_refresh_token = false;
     logout_callback()
   })
@@ -247,8 +272,35 @@ async function watch_access_token() {
     }
 
     let validation_time = localStorage.getItem('access_token_validation_time');
+    let invalidation_time = localStorage.getItem('access_token_invalidation_time');
     let ttl = localStorage.getItem('access_token_ttl');
     let wait_time = ttl*1000 - (Date.now() - validation_time) - 15000
+
+
+    // add an event listener to storage to detect an invalidation from another tab
+    window.addEventListener('storage', (event) => {
+      if (event.key == 'access_token_invalidation_time') {
+        console.log('access-token invalidation detected');
+        invalidation_time = event.newValue;
+        if (invalidation_time > validation_time) {
+          if (check_refresh_token()) {
+            get_access_token()
+          }
+        }
+      }
+    })
+
+    // add an event listener to storage to detect an invalidation from this tab
+    window.addEventListener('access_token_invalidation', () => {
+      console.log('access-token invalidation detected');
+      invalidation_time = event.newValue;
+      if (invalidation_time > validation_time) {
+        if (check_refresh_token()) {
+          get_access_token()
+        }
+      }
+    })
+
 
     // wait 1 hour or until there are only 15 seconds left, whichever comes first
     console.log('access token watch - waiting for:', wait_time);
