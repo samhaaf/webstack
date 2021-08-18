@@ -53,7 +53,7 @@ $ make install
 * Installs docker and pulls the `postgres` image.
 
 ```
-$ build [stage=<stage>]
+$ make build [stage=<stage>]
 ```
 
 * if `stage=local`, builds a `postgres` docker instance for local development.
