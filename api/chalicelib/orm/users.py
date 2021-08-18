@@ -1,12 +1,15 @@
 from .base import Base
 from sqlalchemy import Column, DateTime, String, Integer, func, LargeBinary, Boolean
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.schema import FetchedValue
+
 
 
 class User(Base):
     __tablename__ = 'user'
-    sid = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime)
+    uid = Column(UUID(as_uuid=True), primary_key=True, server_default=FetchedValue())
+    created_at = Column(DateTime, server_default=FetchedValue())
+    updated_at = Column(DateTime, server_default=FetchedValue())
     deleted_at = Column(DateTime)
     first_name = Column(String)
     last_name = Column(String)

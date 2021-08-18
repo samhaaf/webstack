@@ -6,6 +6,7 @@
 poetry.lock
 requirements.txt
 storage.json
-vendor/credentials.json
-vendor/client_secrets.json
-vendor/config.json
+chalicelib/vendor/credentials.json
+chalicelib/vendor/client_secrets.json
+chalicelib/vendor/config.json
+.build/

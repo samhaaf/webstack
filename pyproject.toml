@@ -6,7 +6,7 @@ authors = ["Sam Haaf <samhaaf@gmail.com>"]
 
 
 [tool.poetry.dependencies]
-python = "==3.8.6"
+python = "^3.8"
 boto3 = "*"
 hjson = "^3.0.2"
 argparse = "^1.4.0"

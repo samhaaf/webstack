@@ -7,6 +7,7 @@ from ..tokens import encode_jwt, decode_jwt, create_refresh_token, is_refresh_to
 import hashlib
 import os
 import time
+import uuid
 from pprint import pprint
 from ..config import cors
 from ..responses import Response, generate_cookie_header
@@ -135,7 +136,7 @@ def POST_login():
 
         ## create new refresh token for this user
         new_refresh_token = create_refresh_token(
-            user.sid,
+            user.uid,
             # ttl = 30,
             session=session
         )
@@ -145,14 +146,14 @@ def POST_login():
         return Response(200, {
                 "status": "success",
                 "ttl": new_refresh_token.time_left,
-                "refresh_token_sid": new_refresh_token.sid
+                "refresh_token_uid": str(new_refresh_token.uid)
             }, set_cookie = {
                 'name': 'refresh-token',
                 'value': encode_jwt({
-                    "sid": new_refresh_token.sid,
+                    "uid": str(new_refresh_token.uid),
                     'created_at': new_refresh_token.created_at.timestamp(),
                     "ttl": new_refresh_token.time_to_live,
-                    "user_sid": new_refresh_token.user_sid
+                    "user_uid": str(new_refresh_token.user_uid)
                 }),
                 'max_age': new_refresh_token.time_left
             }
@@ -187,7 +188,7 @@ def check_refresh_token(session=None):
 
 
     ## Assert that refresh token has valid format
-    for ix, prop in enumerate(['sid', 'user_sid', 'ttl']):
+    for ix, prop in enumerate(['uid', 'user_uid', 'ttl']):
         if prop not in refresh_token_cookie:
             return Response(403, {
                 'status': 'failure',
@@ -202,7 +203,7 @@ def check_refresh_token(session=None):
 
         ## Check that the RefreshToken exists
         refresh_token = _session.query(RefreshToken).filter(
-            RefreshToken.sid == refresh_token_cookie['sid']
+            RefreshToken.uid == uuid.UUID(refresh_token_cookie['uid'])
         ).first()
 
 
@@ -250,7 +251,7 @@ def new_refresh_token():
 
         ## create new refresh token for this user
         new_refresh_token = create_refresh_token(
-            refresh_token['user_sid'],
+            refresh_token['user_uid'],
             # ttl = 30,
             session = session
         )
@@ -260,14 +261,14 @@ def new_refresh_token():
         return Response(200, {
                 "status": "success",
                 "ttl": new_refresh_token.time_left,
-                "refresh_token_sid": new_refresh_token.sid
+                "refresh_token_uid": str(new_refresh_token.uid)
             }, set_cookie = {
                 'name': 'refresh-token',
                 'value': encode_jwt({
-                    "sid": new_refresh_token.sid,
+                    "uid": str(new_refresh_token.uid),
                     'created_at': new_refresh_token.created_at.timestamp(),
                     "ttl": new_refresh_token.time_to_live,
-                    "user_sid": new_refresh_token.user_sid,
+                    "user_uid": str(new_refresh_token.user_uid),
                 }),
                 'max_age': new_refresh_token.time_left
             }
@@ -287,7 +288,7 @@ def _check_refresh_token():
     ## return
     return Response(200, {
         "status": "success",
-        "refresh_token_sid": refresh_token['sid'],
+        "refresh_token_uid": str(refresh_token['uid']),
         "ttl": refresh_token['time_left']
     })
 
@@ -307,7 +308,7 @@ def invalidate_refresh_token():
 
         ## invalidate the token
         token_record = session.query(RefreshToken).filter(
-            RefreshToken.sid == refresh_token['sid']
+            RefreshToken.uid == uuid.UUID(refresh_token['uid'])
         ).first()
         token_record.invalidated = True
 
@@ -320,7 +321,7 @@ def invalidate_refresh_token():
         ## return
         return Response(200, {
             "status": "success",
-            "refresh_token_sid": refresh_token['sid']
+            "refresh_token_uid": str(refresh_token['uid'])
         })
 
 
@@ -336,7 +337,7 @@ def new_access_token():
             return error
 
         # ## Assert user has not been banned
-        # user = session.query(User).filter(User.sid == refresh_token['user_sid']).first()
+        # user = session.query(User).filter(User.uid == uuid.UUID(refresh_token['user_uid'])).first()
         # if user.banned:
         #     Response(
         #         status_code = 403,
@@ -356,8 +357,8 @@ def new_access_token():
     access_token = {
         'class': 'base',
         'ttl': 600,
-        'refresh_token_sid': refresh_token['sid'],
-        'user_sid': refresh_token['user_sid'],
+        'refresh_token_uid': str(refresh_token['uid']),
+        'user_uid': str(refresh_token['user_uid']),
         'created_at': time.time()
     }
 
@@ -368,7 +369,7 @@ def new_access_token():
         body = {
             "status": "success",
             "ttl": access_token['ttl'],
-            "refresh_token_sid": refresh_token['sid'],
+            "refresh_token_uid": str(refresh_token['uid']),
         }, set_cookie = {
             'name': 'access-token',
             'value': encode_jwt(access_token),
@@ -405,7 +406,7 @@ def check_access_token():
 
 
     ## Assert that access token has valid format
-    for ix, prop in enumerate(['class', 'user_sid', 'refresh_token_sid', 'ttl', 'created_at']):
+    for ix, prop in enumerate(['class', 'user_uid', 'refresh_token_uid', 'ttl', 'created_at']):
         if prop not in access_token:
             return Response(403, {
                 'status': 'failure',

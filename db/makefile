@@ -19,7 +19,7 @@ install:
 ifeq ($(shell which docker), )
 	sudo apt install docker.io -y
 	sudo usermod -aG docker ${USER}
-	sudo docker pull postgres
+	sudo docker pull postgres:13.4
 endif
 
 

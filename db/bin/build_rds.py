@@ -84,8 +84,9 @@ if instance == None:
     )
     if config['database']['engine'] == 'postgres':
         params.update(dict(
-            DBInstanceClass = "db.t2.micro",
+            DBInstanceClass = "db.t3.micro",
             Engine = "postgres",
+            EngineVersion = '13.3',
             # StorageEncrypted=True,
             CopyTagsToSnapshot=True,
         ))
@@ -97,6 +98,9 @@ if instance == None:
     response = rds.create_db_instance(**params)
     instance = response['DBInstance']
 
+
+if not instance.get('Endpoint'):
+    raise RuntimeError("Please wait for a few minutes until the instance is assigned an endpoint")
 
 ## connect to database
 connection = psycopg2.connect(

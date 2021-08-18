@@ -6,6 +6,7 @@ from .orm import Session
 from .orm.users import User
 from .orm.tokens import RefreshToken
 from .config import config
+import uuid
 
 
 def encode_jwt(payload):
@@ -16,7 +17,10 @@ def decode_jwt(token):
     return jwt.decode(token, config['jwt_secret'], algorithms=["HS256"])
 
 
-def create_refresh_token(user_sid, ttl=7*24*60*60, session=None):  # default 1-week
+def create_refresh_token(user_uid, ttl=7*24*60*60, session=None):  # default 1-week
+
+    if isinstance(user_uid, str):
+        user_uid = uuid.UUID(user_uid)
 
     expunge_all = False
     if session is None:
@@ -25,7 +29,7 @@ def create_refresh_token(user_sid, ttl=7*24*60*60, session=None):  # default 1-w
 
     token = RefreshToken(
         created_at = datetime.now(),
-        user_sid = user_sid,
+        user_uid = user_uid,
         time_to_live = ttl
     )
 
@@ -39,27 +43,30 @@ def create_refresh_token(user_sid, ttl=7*24*60*60, session=None):  # default 1-w
     return token
 
 
-def invalidate_refresh_token(token_sid):
-    session = Session()
+def invalidate_refresh_token(token_uid):
+    with Session() as session:
 
-    token = session.query(RefreshToken).filter(RefreshToken.sid == token_sid).first()
+        if isinstance(token_uid, str):
+            token_uid = uuid.UUID(token_uid)
 
-    if token is None:
-        return False
+        token = session.query(RefreshToken).filter(RefreshToken.uid == token_uid).first()
 
-    token.invalidated = True
+        if token is None:
+            return False
 
-    session.add(token)
-    session.commit()
+        token.invalidated = True
+
+        session.add(token)
+        session.commit()
 
     return True
 
 
 
-def is_refresh_token_valid(token_sid):
+def is_refresh_token_valid(token_uid):
     session = Session()
 
-    token = session.query(RefreshToken).filter(RefreshToken.sid == token_sid).first()
+    token = session.query(RefreshToken).filter(RefreshToken.uid == token_uid).first()
 
     if token is None:
         return False

@@ -1,35 +1,30 @@
 
 
 CREATE TABLE public."user" (
-  sid serial NOT NULL,
+  uid uuid NOT NULL default gen_random_uuid(),
   created_at timestamp not null default now(),
-  updated_at timestamp null,
+  updated_at timestamp not null default now(),
   deleted_at timestamp null,
   first_name varchar null,
   last_name varchar null,
+  username varchar null,
   email_address varchar not null,
-  username varchar not null,
   password_hash bytea not null,
   password_salt bytea not null,
   banned boolean null,
-  CONSTRAINT "user_sid_pk" PRIMARY KEY (sid),
-  CONSTRAINT "user_email_address_uq" UNIQUE (email_address),
-  CONSTRAINT "user_username_uq" UNIQUE (username)
+  CONSTRAINT "user_uid_pk" PRIMARY KEY (uid),
+  CONSTRAINT "user_email_address_uq" UNIQUE (email_address)
 );
-
--- ALTER TABLE public."user" OWNER to postgres;
 
 
 CREATE TABLE public."refresh_token" (
-  sid serial NOT NULL,
+  uid uuid NOT NULL default gen_random_uuid(),
   created_at timestamp not null default now(),
-  updated_at timestamp null,
+  updated_at timestamp not null default now(),
   deleted_at timestamp null,
-  user_sid integer not null,
+  user_uid uuid not null,
   time_to_live integer not null,
   invalidated boolean null,
-  CONSTRAINT "refresh_token_sid_pk" PRIMARY KEY (sid),
-  CONSTRAINT "refresh_token_user_sid_fk" FOREIGN KEY (user_sid) REFERENCES "user"(sid)
+  CONSTRAINT "refresh_token_uid_pk" PRIMARY KEY (uid),
+  CONSTRAINT "refresh_token_user_uid_fk" FOREIGN KEY (user_uid) REFERENCES "user"(uid)
 );
-
--- ALTER TABLE public."refresh_token" OWNER to postgres;

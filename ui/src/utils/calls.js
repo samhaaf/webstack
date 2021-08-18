@@ -45,7 +45,6 @@ function GET(url) {
 function POST(url, payload) {
   return document.config.then((config) => {
     let mode = !!config.api.cors ? 'cors' : 'no-cors';
-    console.log('mode', mode);
     return fetch_manager(url, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},

@@ -39,7 +39,7 @@ process = subprocess.run(
         '--env', f"POSTGRES_USER={config['database']['username']}",
         '--env', f"POSTGRES_PASSWORD={config['database']['password']}",
         '-p', f'{config["database"]["host"]}:{config["database"]["port"]}:5432/tcp',
-        'postgres'
+        'postgres:13.4'
     ],
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE
