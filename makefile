@@ -7,12 +7,12 @@ endif
 
 
 install:
-ifeq ($(only_sys_installs), )
-	poetry install
-endif
 ifeq ($(shell which poetry), )
 	@echo installing python-poetry
 	@curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+endif
+ifeq ($(only_sys_installs), )
+	poetry install
 endif
 
 
