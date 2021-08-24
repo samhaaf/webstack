@@ -1,0 +1,158 @@
+swagger: "2.0"
+
+paths:
+
+  # /user:
+  #   post:
+  #     summary: "Create user"
+  #     operationId: "POST_user"
+  #     produces: "application/json"
+  #     parameters:
+  #     - in: "body"
+  #       name: "user"
+  #       description: "Created user object"
+  #       required: true
+  #       schema:
+  #         $ref: "objects.yaml#/definitions/User"
+
+  /auth/register:
+    post:
+      summary: "Create user"
+      operationId: "auth.POST_register"
+      produces: "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "objects.yaml#/definitions/User"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              user:
+                $ref: "objects.yaml#/definitions/User"
+
+  /auth/login:
+    post:
+      summary: "Create user"
+      operationId: "auth.POST_login"
+      produces: "application/json"
+      parameters:
+      - in: "body"
+        name: "user"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "objects.yaml#/definitions/User"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              user:
+                $ref: "objects.yaml#/definitions/User"
+              refresh_token:
+                $ref: "objects.yaml#/definitions/RefreshToken"
+
+  /auth/refresh_token:
+    get:
+      summary: "Create user"
+      operationId: "auth.GET_refresh_token"
+      produces: "application/json"
+      # parameters:
+      # - in: "header"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              refresh_token:
+                $ref: "objects.yaml#/definitions/RefreshToken"
+
+  /auth/refresh_token/check:
+    get:
+      summary: "Create user"
+      operationId: "auth.GET_refresh_token_check"
+      produces: "application/json"
+      # parameters:
+      # - in: "header"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              refresh_token:
+                $ref: "objects.yaml#/definitions/RefreshToken"
+
+  /auth/refresh_token/invalidate:
+    get:
+      summary: "Create user"
+      operationId: "auth.GET_refresh_token_invalidate"
+      produces: "application/json"
+      # parameters:
+      # - in: "header"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              refresh_token:
+                $ref: "objects.yaml#/definitions/RefreshToken"
+
+  # /auth/refresh_token/invalidate_all:
+
+  /auth/access_token:
+    get:
+      summary: "Create user"
+      operationId: "auth.GET_access_token"
+      produces: "application/json"
+      # parameters:
+      # - in: "header"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              access_token:
+                $ref: "objects.yaml#/definitions/AccessToken"
+
+  /auth/access_token/check:
+    get:
+      summary: "Create user"
+      operationId: "auth.GET_access_token_check"
+      produces: "application/json"
+      # parameters:
+      # - in: "header"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            parameters:
+              success:
+                type: "string"
+              access_token:
+                $ref: "objects.yaml#/definitions/AccessToken"
+
+  /dev/set_cookie:

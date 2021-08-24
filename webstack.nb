@@ -1,4 +1,10 @@
-
+: TODO
+  * update config
+    * .get.hjson -> .config
+    * .private. -> .gitignore.
+      * add `**/*.gitignore.*` to root .gitignore
+      
+  * update db/bin/update for .json files to specify dtype
 
 / v0.1.0
   . local deployment

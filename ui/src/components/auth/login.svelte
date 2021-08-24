@@ -20,7 +20,7 @@
 
 
 <script>
-  import { do_login } from '../../utils/auth.js'
+  import { login } from '../../utils/auth.js'
   import { get_query_params } from '../../utils/general.js'
 
   let credentials = {
@@ -39,7 +39,7 @@
   })
 
   function login_and_redirect() {
-    do_login(credentials).then((success) => {
+    login(credentials).then((success) => {
       console.log('success?', success);
       const url_params = get_query_params(window.location.search);
       if (success) {

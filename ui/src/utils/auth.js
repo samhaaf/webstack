@@ -20,16 +20,32 @@ function invalidation_alert(token_name){
 }
 
 
-function do_login(credentials) {
+function login(credentials) {
   return document.config.then((config) => {
-    return POST(config.api.url + '/login', credentials)
+    return POST(config.api.url + '/auth/login', credentials)
     .then((payload) => {
       console.log('login successful', payload)
-      validation_alert('refresh_token', payload.ttl)
+      validation_alert('refresh_token', payload.refresh_token.ttl)
       return payload
     })
     .catch((error) => {
-      console.log('/login call failed', error)
+      console.log('failed to login', error)
+      return false
+    })
+  })
+}
+
+
+function register(user_params) {
+  return document.config.then((config) => {
+    return POST(config.api.url + '/auth/register', user_params)
+    .then((payload) => {
+      console.log('register successful', payload)
+      validation_alert('refresh_token', payload.refresh_token.ttl)
+      return payload
+    })
+    .catch((error) => {
+      console.log('failed to register', error)
       return false
     })
   })
@@ -38,10 +54,10 @@ function do_login(credentials) {
 
 function get_refresh_token() {
   return document.config.then((config) => {
-    return GET(config.api.url + '/new_refresh_token')
+    return GET(config.api.url + '/auth/refresh_token')
     .then((payload) => {
       console.log('refresh token gotten', payload)
-      validation_alert('refresh_token', payload.ttl)
+      validation_alert('refresh_token', payload.refresh_token.ttl)
       return payload
     })
     .catch((error) => {
@@ -57,10 +73,10 @@ function get_refresh_token() {
 
 function check_refresh_token() {
   return document.config.then((config) => {
-    return GET(config.api.url + '/check_refresh_token')
+    return GET(config.api.url + '/auth/refresh_token/check')
     .then((payload) => {
       console.log('refresh token check valid', payload)
-      validation_alert('refresh_token', payload.ttl)
+      validation_alert('refresh_token', payload.refresh_token.time_left)
       return payload
     })
     .catch((error) => {
@@ -76,7 +92,7 @@ function check_refresh_token() {
 
 function invalidate_refresh_token() {
   return document.config.then((config) => {
-    return GET(config.api.url + '/invalidate_refresh_token')
+    return GET(config.api.url + '/auth/refresh_token/invalidate')
     .then((payload) => {
       console.log('refresh token invalidated', payload)
       invalidation_alert('refresh_token')
@@ -95,7 +111,7 @@ function invalidate_refresh_token() {
 
 function invalidate_all_refresh_tokens() {
   return document.config.then((config) => {
-    return GET(config.api.url + '/invalidate_all_refresh_tokens')
+    return GET(config.api.url + '/auth/refresh_token/invalidate_all')
     .then((payload) => {
       console.log('all refresh tokens invalidated', payload)
       invalidation_alert('refresh_token')
@@ -114,10 +130,10 @@ function invalidate_all_refresh_tokens() {
 
 function get_access_token() {
   return document.config.then((config) => {
-    return GET(config.api.url + '/new_access_token')
+    return GET(config.api.url + '/auth/access_token')
     .then((payload) => {
       console.log('access token gotten', payload)
-      validation_alert('access_token', payload.ttl)
+      validation_alert('access_token', payload.access_token.ttl)
       return payload
     })
     .catch((error) => {
@@ -133,10 +149,10 @@ function get_access_token() {
 
 function check_access_token() {
   return document.config.then((config) => {
-    return GET(config.api.url + '/check_access_token')
+    return GET(config.api.url + '/auth/access_token/check')
     .then((payload) => {
       console.log('access token check valid', payload)
-      validation_alert('access_token', payload.ttl)
+      validation_alert('access_token', payload.access_token.time_left)
       return payload
     })
     .catch((error) => {
@@ -207,6 +223,14 @@ async function watch_refresh_token(login_callback, logout_callback) {
     console.log('refresh-token invalidation detected');
     valid_refresh_token = false;
     logout_callback()
+  })
+
+
+  // add an event listener to storage to detect an validation from this tab
+  window.addEventListener('refresh_token_validation', () => {
+    console.log('refresh-token validation detected');
+    valid_refresh_token = true;
+    login_callback()
   })
 
 
@@ -330,7 +354,8 @@ export {
   invalidate_all_refresh_tokens,
   get_access_token,
   check_access_token,
-  do_login,
+  login,
+  register,
   check_login,
   watch_refresh_token,
   watch_access_token,

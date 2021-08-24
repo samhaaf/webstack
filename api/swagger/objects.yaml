@@ -1,0 +1,77 @@
+swagger: "2.0"
+
+definitions:
+
+  User:
+    type: "object"
+    xml:
+      name: "User"
+    properties:
+      uid:
+        type: "string"
+        format: "uuid"
+      created_at:
+        type: number
+        format: "epoch"
+      first_name:
+        type: "string"
+      last_ame:
+        type: "string"
+      username:
+        type: "string"
+      email_address:
+        type: "string"
+        format: "email"
+      phone_number:
+        type: "string"
+      password:
+        type: "string"
+      banned:
+        type: "boolean"
+
+  RefreshToken:
+    type: "object"
+    xml:
+      name: "RefreshToken"
+    properties:
+      uid:
+        type: "string"
+        format: "uuid"
+      created_at:
+        type: number
+        format: "epoch"
+      user_uid:
+        type: "string"
+        format: "uuid"
+      ttl:
+        type: "number"
+        format: "float"
+      time_left:
+        type: "number"
+        format: "float"
+      invalidated:
+        type: "boolean"
+
+  AccessToken:
+    type: "object"
+    xml:
+      name: "AccessToken"
+    properties:
+      uid:
+        type: "string"
+        format: "uuid"
+      created_at:
+        type: number
+        format: "epoch"
+      user_uid:
+        type: "string"
+        format: "uuid"
+      refresh_token_uid:
+        type: "string"
+        format: "uuid"
+      ttl:
+        type: "number"
+      time_left:
+        type: "number"
+      invalidated:
+        type: "boolean"

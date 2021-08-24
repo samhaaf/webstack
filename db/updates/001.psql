@@ -23,7 +23,7 @@ CREATE TABLE public."refresh_token" (
   updated_at timestamp not null default now(),
   deleted_at timestamp null,
   user_uid uuid not null,
-  time_to_live integer not null,
+  ttl integer not null,
   invalidated boolean null,
   CONSTRAINT "refresh_token_uid_pk" PRIMARY KEY (uid),
   CONSTRAINT "refresh_token_user_uid_fk" FOREIGN KEY (user_uid) REFERENCES "user"(uid)

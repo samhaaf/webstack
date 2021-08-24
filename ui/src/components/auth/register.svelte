@@ -26,6 +26,8 @@
 
 <script>
 
+  import { register } from '../../utils/auth.js'
+
   let first_name = '';
   let last_name = '';
   let email_address = '';
@@ -44,37 +46,12 @@
   })
 
   function on_submit(){
-    let post_body = {
+    register({
       first_name: first_name,
       last_name: last_name,
       email_address: email_address,
       username: username,
       password: password
-    }
-    fetch(config.api.url + '/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(post_body)
     })
-    .then((response) => {
-      if (response.ok) {
-        try {
-          return response.json();
-        } catch {
-          response.text().then(text => {
-            return text;
-          })
-        }
-      } else {
-        response.text().then(text => {
-          throw new Error(text);
-        })
-      }
-    })
-    .then((response) => { console.log(response) })
-    .catch((error) => { alert(error) })
-
   }
 </script>
