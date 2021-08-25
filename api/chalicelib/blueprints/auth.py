@@ -195,6 +195,7 @@ def check_refresh_token(session=None):
     ## Assert that refresh token has valid format
     for ix, prop in enumerate(['uid', 'user_uid', 'ttl']):
         if prop not in refresh_token_cookie:
+            print('invalid refresh_token_cookie:', refresh_token_cookie)
             return Response(403, {
                 'status': 'failure',
                 'message': f'refresh token had invalid format [{ix}]',
@@ -278,10 +279,10 @@ def GET_refresh_token():
         ## return
         return Response(200, {
                 "status": "success",
-                "refresh_token": dump(refresh_token)
+                "refresh_token": dump(new_refresh_token)
             }, set_cookie = {
                 'name': 'refresh-token',
-                'value': encode_jwt(dump(refresh_token)),
+                'value': encode_jwt(dump(new_refresh_token)),
                 'max_age': new_refresh_token.time_left
             }
         )

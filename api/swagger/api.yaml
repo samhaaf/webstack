@@ -2,19 +2,6 @@ swagger: "2.0"
 
 paths:
 
-  # /user:
-  #   post:
-  #     summary: "Create user"
-  #     operationId: "POST_user"
-  #     produces: "application/json"
-  #     parameters:
-  #     - in: "body"
-  #       name: "user"
-  #       description: "Created user object"
-  #       required: true
-  #       schema:
-  #         $ref: "objects.yaml#/definitions/User"
-
   /auth/register:
     post:
       summary: "Create user"
@@ -22,7 +9,7 @@ paths:
       produces: "application/json"
       parameters:
       - in: "body"
-        name: "user"
+        name: "body"
         description: "Created user object"
         required: true
         schema:
@@ -45,7 +32,7 @@ paths:
       produces: "application/json"
       parameters:
       - in: "body"
-        name: "user"
+        name: "body"
         description: "Created user object"
         required: true
         schema:
@@ -117,7 +104,7 @@ paths:
               refresh_token:
                 $ref: "objects.yaml#/definitions/RefreshToken"
 
-  # /auth/refresh_token/invalidate_all:
+  # TODO /auth/refresh_token/invalidate_all:
 
   /auth/access_token:
     get:
@@ -156,3 +143,42 @@ paths:
                 $ref: "objects.yaml#/definitions/AccessToken"
 
   /dev/set_cookie:
+    post:
+      summary: "Get the server to set a custom cookie on the client"
+      operationId: "dev.POST_set_cookie"
+      produces: "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            http_only:
+              type: "boolean"
+            domain:
+              type: "string"
+            same_site:
+              type: "string"
+              enum:
+                - "None"
+                - "Lax"
+                - "Strict"
+            path:
+              type: "string"
+            secure:
+              type: "boolean"
+
+  # /user:
+  #   post:
+  #     summary: "Create user"
+  #     operationId: "POST_user"
+  #     produces: "application/json"
+  #     parameters:
+  #     - in: "body"
+  #       name: "user"
+  #       description: "Created user object"
+  #       required: true
+  #       schema:
+  #         $ref: "objects.yaml#/definitions/User"

@@ -54,7 +54,7 @@ def GET_products():
 
 
 @blueprint.route('/set_cookie', methods=['POST'], cors=cors, content_types=['text/plain'])
-def POST_dev_set_cookie():
+def POST_set_cookie():
     request = json.loads(blueprint.current_request.raw_body.decode())
 
     print('Setting cookie', dict(
