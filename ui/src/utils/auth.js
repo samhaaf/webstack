@@ -21,147 +21,131 @@ function invalidation_alert(token_name){
 
 
 function login(credentials) {
-  return document.config.then((config) => {
-    return POST(config.api.url + '/auth/login', credentials)
-    .then((payload) => {
-      console.log('login successful', payload)
-      validation_alert('refresh_token', payload.refresh_token.ttl)
-      return payload
-    })
-    .catch((error) => {
-      console.log('failed to login', error)
-      return false
-    })
+  return POST('/auth/login', credentials)
+  .then((payload) => {
+    console.log('login successful', payload)
+    validation_alert('refresh_token', payload.refresh_token.ttl)
+    return payload
+  })
+  .catch((error) => {
+    console.log('failed to login', error)
+    return false
   })
 }
 
 
 function register(user_params) {
-  return document.config.then((config) => {
-    return POST(config.api.url + '/auth/register', user_params)
-    .then((payload) => {
-      console.log('register successful', payload)
-      validation_alert('refresh_token', payload.refresh_token.ttl)
-      return payload
-    })
-    .catch((error) => {
-      console.log('failed to register', error)
-      return false
-    })
+  return POST('/auth/register', user_params)
+  .then((payload) => {
+    console.log('register successful', payload)
+    validation_alert('refresh_token', payload.refresh_token.ttl)
+    return payload
+  })
+  .catch((error) => {
+    console.log('failed to register', error)
+    return false
   })
 }
 
 
 function get_refresh_token() {
-  return document.config.then((config) => {
-    return GET(config.api.url + '/auth/refresh_token')
-    .then((payload) => {
-      console.log('refresh token gotten', payload)
-      validation_alert('refresh_token', payload.refresh_token.ttl)
-      return payload
-    })
-    .catch((error) => {
-      console.log('refresh token get request failed', error)
-      if (error['refresh_token_invalidated']) {
-        invalidation_alert('refresh_token')
-      }
-      return false
-    })
+  return GET('/auth/refresh_token')
+  .then((payload) => {
+    console.log('refresh token gotten', payload)
+    validation_alert('refresh_token', payload.refresh_token.ttl)
+    return payload
+  })
+  .catch((error) => {
+    console.log('refresh token get request failed', error)
+    if (error['refresh_token_invalidated']) {
+      invalidation_alert('refresh_token')
+    }
+    return false
   })
 }
 
 
 function check_refresh_token() {
-  return document.config.then((config) => {
-    return GET(config.api.url + '/auth/refresh_token/check')
-    .then((payload) => {
-      console.log('refresh token check valid', payload)
-      validation_alert('refresh_token', payload.refresh_token.time_left)
-      return payload
-    })
-    .catch((error) => {
-      console.log('refresh token check failed', error)
-      if (!!error['refresh_token_invalidated']) {
-        invalidation_alert('refresh_token')
-      }
-      return false
-    })
+  return GET('/auth/refresh_token/check')
+  .then((payload) => {
+    console.log('refresh token check valid', payload)
+    validation_alert('refresh_token', payload.refresh_token.time_left)
+    return payload
+  })
+  .catch((error) => {
+    console.log('refresh token check failed', error)
+    if (!!error['refresh_token_invalidated']) {
+      invalidation_alert('refresh_token')
+    }
+    return false
   })
 }
 
 
 function invalidate_refresh_token() {
-  return document.config.then((config) => {
-    return GET(config.api.url + '/auth/refresh_token/invalidate')
-    .then((payload) => {
-      console.log('refresh token invalidated', payload)
+  return GET('/auth/refresh_token/invalidate')
+  .then((payload) => {
+    console.log('refresh token invalidated', payload)
+    invalidation_alert('refresh_token')
+    return payload
+  })
+  .catch((error) => {
+    console.log('invalidation of refresh token failed', error)
+    if (!!error['refresh_token_invalidated']) {
       invalidation_alert('refresh_token')
-      return payload
-    })
-    .catch((error) => {
-      console.log('invalidation of refresh token failed', error)
-      if (!!error['refresh_token_invalidated']) {
-        invalidation_alert('refresh_token')
-      }
-      return false
-    })
+    }
+    return false
   })
 }
 
 
 function invalidate_all_refresh_tokens() {
-  return document.config.then((config) => {
-    return GET(config.api.url + '/auth/refresh_token/invalidate_all')
-    .then((payload) => {
-      console.log('all refresh tokens invalidated', payload)
+  return GET('/auth/refresh_token/invalidate_all')
+  .then((payload) => {
+    console.log('all refresh tokens invalidated', payload)
+    invalidation_alert('refresh_token')
+    return payload
+  })
+  .catch((error) => {
+    console.log('invalidation of all refresh tokens failed', error)
+    if (!!error['refresh_token_invalidated']) {
       invalidation_alert('refresh_token')
-      return payload
-    })
-    .catch((error) => {
-      console.log('invalidation of all refresh tokens failed', error)
-      if (!!error['refresh_token_invalidated']) {
-        invalidation_alert('refresh_token')
-      }
-      return false
-    })
+    }
+    return false
   })
 }
 
 
 function get_access_token() {
-  return document.config.then((config) => {
-    return GET(config.api.url + '/auth/access_token')
-    .then((payload) => {
-      console.log('access token gotten', payload)
-      validation_alert('access_token', payload.access_token.ttl)
-      return payload
-    })
-    .catch((error) => {
-      console.log('access token request failed', error)
-      if (!!error['refresh_token_invalidated']) {
-        invalidation_alert('refresh_token')
-      }
-      return false
-    })
+  return GET('/auth/access_token')
+  .then((payload) => {
+    console.log('access token gotten', payload)
+    validation_alert('access_token', payload.access_token.ttl)
+    return payload
+  })
+  .catch((error) => {
+    console.log('access token request failed', error)
+    if (!!error['refresh_token_invalidated']) {
+      invalidation_alert('refresh_token')
+    }
+    return false
   })
 }
 
 
 function check_access_token() {
-  return document.config.then((config) => {
-    return GET(config.api.url + '/auth/access_token/check')
-    .then((payload) => {
-      console.log('access token check valid', payload)
-      validation_alert('access_token', payload.access_token.time_left)
-      return payload
-    })
-    .catch((error) => {
-      console.log('access token check failed', error)
-      if (!!error['access_token_invalidated']) {
-        invalidation_alert('access_token')
-      }
-      return false
-    })
+  return GET('/auth/access_token/check')
+  .then((payload) => {
+    console.log('access token check valid', payload)
+    validation_alert('access_token', payload.access_token.time_left)
+    return payload
+  })
+  .catch((error) => {
+    console.log('access token check failed', error)
+    if (!!error['access_token_invalidated']) {
+      invalidation_alert('access_token')
+    }
+    return false
   })
 }
 

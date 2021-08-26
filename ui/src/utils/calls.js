@@ -9,11 +9,6 @@ function fetch_manager(url, args, timeout) {
     }
     fetch(url, args)
     .then((response) => {
-     //  for (var pair of response.headers.entries()) {
-     //   console.log('header - ' + pair[0]+ ': '+ pair[1]);
-     // }
-     //  console.log('header - X-custom-header: ' + response.headers.get('X-Custom-header'));
-
       if (response.ok) {
         try { response.json().then((json) => { resolve(json) }) }
         catch { response.text().then((text) => { resolve(text) })  }
@@ -30,10 +25,10 @@ function fetch_manager(url, args, timeout) {
 }
 
 
-function GET(url) {
+function GET(path) {
   return document.config.then((config) => {
     let mode = !!config.api.cors ? 'cors' : 'no-cors';
-    return fetch_manager(url, {
+    return fetch_manager(config.api.url + path, {
       method: 'GET',
       credentials: 'include',
       mode: mode
@@ -42,10 +37,10 @@ function GET(url) {
 }
 
 
-function POST(url, payload) {
+function POST(path, payload) {
   return document.config.then((config) => {
     let mode = !!config.api.cors ? 'cors' : 'no-cors';
-    return fetch_manager(url, {
+    return fetch_manager(config.api.url + path, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify(payload),
@@ -54,5 +49,6 @@ function POST(url, payload) {
     }, 10000)
   })
 }
+
 
 export {GET, POST}

@@ -3,8 +3,11 @@
     * .get.hjson -> .config
     * .private. -> .gitignore.
       * add `**/*.gitignore.*` to root .gitignore
-      
+
   * update db/bin/update for .json files to specify dtype
+
+  * generate DB and ORM from swagger file
+    . version control and update files
 
 / v0.1.0
   . local deployment
